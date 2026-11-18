@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "i.ibb.co" },
       { protocol: "https", hostname: "images.ibb.co" },
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
   turbopack: {
