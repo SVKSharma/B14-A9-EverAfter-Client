@@ -85,6 +85,20 @@ export interface Transaction {
   vendor?: PublicVendor | null;
 }
 
+/** Shape returned by GET /api/users/me. */
+export interface ProfileUser {
+  id: string;
+  name: string;
+  email: string;
+  image: string | null;
+  role: Role;
+  businessName: string | null;
+  isBlocked: boolean;
+  subscriptionPlan: SubscriptionPlan;
+  subscriptionExpiresAt: string | null;
+  createdAt?: string | null;
+}
+
 export interface PaginationMeta {
   page: number;
   limit: number;

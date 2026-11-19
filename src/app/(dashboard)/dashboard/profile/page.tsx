@@ -1,29 +1,30 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getServerSession } from "@/lib/auth-guard";
-import { ROLE_LABELS } from "@/lib/constants";
-import { toSessionUser } from "@/lib/session-user";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { ProfileForm } from "@/components/profile/profile-form";
+import { getServerSession } from "@/lib/auth-guard";
+import { serverApiFetch } from "@/lib/server-api";
+import { toSessionUser } from "@/lib/session-user";
+import type { ProfileUser } from "@/types";
 
-export const metadata = { title: "Profile" };
+export const metadata: Metadata = { title: "Profile" };
 
 export default async function ProfilePage() {
   const session = await getServerSession();
   if (!session) redirect("/sign-in?redirect=/dashboard/profile");
 
-  const user = toSessionUser(session.user as Parameters<typeof toSessionUser>[0]);
+  const fallbackUser = toSessionUser(session.user as Parameters<typeof toSessionUser>[0]);
 
-  const rows = [
-    { label: "Full name", value: user.name },
-    { label: "Email", value: user.email },
-    { label: "Role", value: ROLE_LABELS[user.role] },
-    ...(user.role === "vendor"
-      ? [
-          { label: "Business name", value: user.businessName ?? "Not set yet" },
-          { label: "Plan", value: user.subscriptionPlan === "premium" ? "Premium" : "Free" },
-        ]
-      : []),
-  ];
+  const fallback: ProfileUser = {
+    ...fallbackUser,
+    businessName: fallbackUser.businessName ?? null,
+    subscriptionPlan: fallbackUser.subscriptionPlan ?? "free",
+    subscriptionExpiresAt: null,
+    createdAt: null,
+  };
+
+  // The profile is served by Express so the form edits the same record the
+  // rest of the API reads, not the Better Auth session snapshot.
+  const user = (await serverApiFetch<ProfileUser>("/users/me")) ?? fallback;
 
   return (
     <div className="space-y-6">
@@ -34,30 +35,7 @@ export default async function ProfilePage() {
         </p>
       </div>
 
-      <Card className="border-border/80">
-        <CardHeader>
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <CardTitle className="font-heading text-2xl">Account details</CardTitle>
-              <CardDescription>Read-only until profile editing lands.</CardDescription>
-            </div>
-            <Badge variant="secondary">{ROLE_LABELS[user.role]}</Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <dl className="divide-y divide-border/70">
-            {rows.map((row) => (
-              <div key={row.label} className="grid gap-1 py-3 sm:grid-cols-3">
-                <dt className="text-sm text-muted-foreground">{row.label}</dt>
-                <dd className="text-sm font-medium sm:col-span-2">{row.value}</dd>
-              </div>
-            ))}
-          </dl>
-          <p className="mt-4 rounded-lg bg-secondary/60 px-3 py-2 text-xs text-muted-foreground">
-            Editing name, photo and business details arrives with the profile settings phase.
-          </p>
-        </CardContent>
-      </Card>
+      <ProfileForm user={user} />
     </div>
   );
 }

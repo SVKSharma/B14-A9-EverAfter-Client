@@ -21,6 +21,8 @@ export const signUpSchema = z.object({
   email: z.string().trim().min(1, "Email is required.").email("Enter a valid email address."),
   password: passwordSchema,
   role: z.enum(["vendor", "customer"], { error: "Choose an account type." }),
+  /** Optional avatar as a data URI; uploaded once the account exists. */
+  image: z.string().optional(),
 });
 
 export type SignInValues = z.infer<typeof signInSchema>;

@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "@/components/auth/google-icon";
+import { SignUpAvatar } from "@/components/auth/sign-up-avatar";
+import { apiFetch } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 import { DASHBOARD_PATH_BY_ROLE } from "@/lib/constants";
 import { safeRedirectPath } from "@/lib/redirect";
@@ -36,11 +38,12 @@ function SignUpFormInner() {
     resolver: zodResolver(signUpSchema),
     // No role preselected: the person must state who they are before either
     // the email form or Google can create an account.
-    defaultValues: { name: "", email: "", password: "", role: undefined },
+    defaultValues: { name: "", email: "", password: "", role: undefined, image: "" },
     mode: "onTouched",
   });
 
   const role = useWatch({ control: form.control, name: "role" });
+  const image = useWatch({ control: form.control, name: "image" }) ?? "";
   const isSubmitting = form.formState.isSubmitting;
 
   const onSubmit = async (values: SignUpValues) => {
@@ -54,6 +57,20 @@ function SignUpFormInner() {
     if (error) {
       toast.error(error.message ?? "Could not create your account. Try again.");
       return;
+    }
+
+    // The avatar can only be uploaded with a session, so it goes right after
+    // sign-up. A failure here must not hide the fact that the account exists.
+    if (values.image) {
+      try {
+        const uploaded = await apiFetch<{ url: string }>("/uploads/image", {
+          method: "POST",
+          body: { image: values.image, name: `${values.name}-avatar` },
+        });
+        await apiFetch("/users/me", { method: "PATCH", body: { image: uploaded.url } });
+      } catch {
+        toast.warning("Account created, but your photo could not be saved. Add it from your profile.");
+      }
     }
 
     const resolvedRole = normalizeRole(data?.user?.role);
@@ -190,6 +207,16 @@ function SignUpFormInner() {
               At least 6 characters with one uppercase and one lowercase letter.
             </p>
           )}
+        </div>
+
+        <div className="space-y-2">
+          <Label>Profile photo</Label>
+          <SignUpAvatar
+            value={image}
+            name={form.getValues("name")}
+            onChange={(dataUri) => form.setValue("image", dataUri, { shouldDirty: true })}
+            onClear={() => form.setValue("image", "", { shouldDirty: true })}
+          />
         </div>
 
         <Button type="submit" size="lg" className="h-11 w-full" disabled={isSubmitting}>
