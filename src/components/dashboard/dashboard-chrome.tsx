@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  CalendarCheck,
   CalendarHeart,
   Compass,
   LayoutDashboard,
@@ -35,6 +36,11 @@ function navItems(user: SessionUser): NavItem[] {
 
   if (user.role === "vendor") {
     items.push({ href: "/dashboard/vendor/services", label: "My services", icon: Store });
+    items.push({ href: "/dashboard/vendor/bookings", label: "Booking requests", icon: CalendarCheck });
+  }
+
+  if (user.role === "customer") {
+    items.push({ href: "/dashboard/customer/bookings", label: "My bookings", icon: CalendarCheck });
   }
 
   items.push(

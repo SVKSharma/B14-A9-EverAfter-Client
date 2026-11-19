@@ -90,6 +90,28 @@ export interface PaginationMeta {
   totalPages: number;
 }
 
+export interface VendorStats {
+  services: { total: number; active: number; pending: number };
+  bookings: { pending: number; accepted: number; rejected: number };
+  plan: SubscriptionPlan;
+  quota: {
+    plan: SubscriptionPlan;
+    limit: number | null;
+    used: number;
+    remaining: number | null;
+  };
+}
+
+export interface CustomerStats {
+  bookings: {
+    total: number;
+    pending: number;
+    accepted: number;
+    rejected: number;
+    cancelled: number;
+  };
+}
+
 export interface ApiSuccess<T> {
   success: true;
   data: T;

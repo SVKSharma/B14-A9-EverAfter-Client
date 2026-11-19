@@ -36,7 +36,8 @@ const PANELS: Record<Role, RolePanel[]> = {
       icon: CalendarCheck,
       title: "My bookings",
       description: "Send requests, follow vendor replies and cancel pending ones.",
-      status: "next",
+      status: "ready",
+      href: "/dashboard/customer/bookings",
     },
     {
       icon: Sparkles,
@@ -58,7 +59,8 @@ const PANELS: Record<Role, RolePanel[]> = {
       icon: CalendarCheck,
       title: "Booking requests",
       description: "Accept or reject requests from couples.",
-      status: "next",
+      status: "ready",
+      href: "/dashboard/vendor/bookings",
     },
     {
       icon: Wallet,

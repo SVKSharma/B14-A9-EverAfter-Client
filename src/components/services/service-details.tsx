@@ -20,6 +20,7 @@ import { apiFetch, ApiError, getErrorMessage } from "@/lib/api";
 import { formatCurrency } from "@/lib/format";
 import { getCategoryLabel } from "@/lib/constants";
 import { useSessionUser } from "@/hooks/use-session-user";
+import { BookingForm } from "@/components/bookings/booking-form";
 import { ServiceCard } from "@/components/shared/service-card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -364,6 +365,15 @@ export function ServiceDetails({ id }: { id: string }) {
                 <div className="rounded-xl border border-border bg-secondary/50 p-4 text-sm text-muted-foreground">
                   Admin accounts can&apos;t submit customer booking requests.
                 </div>
+              ) : user?.role === "customer" ? (
+                <BookingForm service={service} />
+              ) : user ? (
+                <div className="rounded-xl border border-border bg-secondary/50 p-4 text-sm text-muted-foreground">
+                  Booking requests are for customer accounts.{" "}
+                  <Link href="/dashboard/vendor" className="font-medium text-primary hover:underline">
+                    Go to your dashboard
+                  </Link>
+                </div>
               ) : (
                 <Link
                   href={`/sign-in?redirect=${encodeURIComponent(`/services/${service._id}`)}`}
@@ -373,7 +383,7 @@ export function ServiceDetails({ id }: { id: string }) {
                 </Link>
               )}
               <p className="mt-3 text-center text-xs text-muted-foreground">
-                {isOwnService || isAdmin
+                {isOwnService || isAdmin || (user && user.role !== "customer")
                   ? "Switch to a customer account to book services."
                   : "Booking requests are free. You only pay the vendor directly."}
               </p>
