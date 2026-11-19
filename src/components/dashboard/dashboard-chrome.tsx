@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Store,
   UserRound,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -28,11 +29,20 @@ interface NavItem {
 }
 
 function navItems(user: SessionUser): NavItem[] {
-  return [
+  const items: NavItem[] = [
     { href: DASHBOARD_PATH_BY_ROLE[user.role], label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/profile", label: "Profile", icon: UserRound },
-    { href: "/services", label: "Browse services", icon: Compass },
   ];
+
+  if (user.role === "vendor") {
+    items.push({ href: "/dashboard/vendor/services", label: "My services", icon: Store });
+  }
+
+  items.push(
+    { href: "/dashboard/profile", label: "Profile", icon: UserRound },
+    { href: "/services", label: "Browse services", icon: Compass }
+  );
+
+  return items;
 }
 
 function NavLinks({ user, onNavigate }: { user: SessionUser; onNavigate?: () => void }) {

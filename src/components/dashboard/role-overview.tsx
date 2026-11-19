@@ -51,7 +51,8 @@ const PANELS: Record<Role, RolePanel[]> = {
       icon: Store,
       title: "My services",
       description: "Create listings, upload photos and manage availability.",
-      status: "next",
+      status: "ready",
+      href: "/dashboard/vendor/services",
     },
     {
       icon: CalendarCheck,

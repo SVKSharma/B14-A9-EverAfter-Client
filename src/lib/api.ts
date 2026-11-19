@@ -58,6 +58,9 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<A
     return fetch(getApiUrl(path), {
       ...rest,
       headers: finalHeaders,
+      // The API validates the Better Auth session cookie, so cross-port calls
+      // must carry it. Same-site localhost/3000 → /5000 stays first-party.
+      credentials: "include",
       body: body === undefined ? undefined : isFormData ? (body as FormData) : JSON.stringify(body),
     });
   };

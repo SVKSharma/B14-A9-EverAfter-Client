@@ -8,6 +8,7 @@ export const ROUTE_ACCESS: Record<string, { roles: Role[] }> = {
   "/dashboard": { roles: ["admin", "vendor", "customer"] },
   "/dashboard/admin": { roles: ["admin"] },
   "/dashboard/vendor": { roles: ["vendor"] },
+  "/dashboard/vendor/services": { roles: ["vendor"] },
   "/dashboard/customer": { roles: ["customer"] },
   "/dashboard/profile": { roles: ["admin", "vendor", "customer"] },
 };
