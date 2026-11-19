@@ -7,6 +7,7 @@ import {
   CalendarCheck,
   CalendarHeart,
   Compass,
+  Crown,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -40,6 +41,7 @@ function navItems(user: SessionUser): NavItem[] {
   if (user.role === "vendor") {
     items.push({ href: "/dashboard/vendor/services", label: "My services", icon: Store });
     items.push({ href: "/dashboard/vendor/bookings", label: "Booking requests", icon: CalendarCheck });
+    items.push({ href: "/dashboard/vendor/subscription", label: "Subscription", icon: Crown });
   }
 
   if (user.role === "customer") {

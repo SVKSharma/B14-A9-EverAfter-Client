@@ -13,6 +13,7 @@ export const ROUTE_ACCESS: Record<string, { roles: Role[] }> = {
   "/dashboard/vendor": { roles: ["vendor"] },
   "/dashboard/vendor/services": { roles: ["vendor"] },
   "/dashboard/vendor/bookings": { roles: ["vendor"] },
+  "/dashboard/vendor/subscription": { roles: ["vendor"] },
   "/dashboard/customer": { roles: ["customer"] },
   "/dashboard/customer/bookings": { roles: ["customer"] },
   "/dashboard/profile": { roles: ["admin", "vendor", "customer"] },
