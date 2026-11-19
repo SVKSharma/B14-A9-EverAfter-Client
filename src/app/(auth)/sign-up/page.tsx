@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AuthPending } from "@/components/auth/auth-pending";
+import { SignUpForm } from "@/components/auth/sign-up-form";
 
 export const metadata: Metadata = {
   title: "Create an Account",
@@ -7,11 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function SignUpPage() {
-  return (
-    <AuthPending
-      eyebrow="Join EverAfter"
-      title="Create your account"
-      description="Whether you're planning a wedding or growing a wedding business, your account is the first step."
-    />
-  );
+  return <SignUpForm />;
 }

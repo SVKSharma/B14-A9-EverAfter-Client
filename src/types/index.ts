@@ -17,6 +17,18 @@ export interface User {
   createdAt?: string;
 }
 
+/** Normalized shape the UI consumes from the Better Auth session. */
+export interface SessionUser {
+  id: string;
+  name: string;
+  email: string;
+  image: string | null;
+  role: Role;
+  isBlocked: boolean;
+  businessName?: string | null;
+  subscriptionPlan?: SubscriptionPlan;
+}
+
 export interface PublicVendor {
   id: string;
   name: string;
