@@ -10,8 +10,11 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Receipt,
+  ShieldCheck,
   Store,
   UserRound,
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -41,6 +44,14 @@ function navItems(user: SessionUser): NavItem[] {
 
   if (user.role === "customer") {
     items.push({ href: "/dashboard/customer/bookings", label: "My bookings", icon: CalendarCheck });
+  }
+
+  if (user.role === "admin") {
+    items.push(
+      { href: "/dashboard/admin/users", label: "Manage users", icon: Users },
+      { href: "/dashboard/admin/services", label: "Moderate services", icon: ShieldCheck },
+      { href: "/dashboard/admin/transactions", label: "Transactions", icon: Receipt }
+    );
   }
 
   items.push(

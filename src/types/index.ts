@@ -35,6 +35,8 @@ export interface PublicVendor {
   businessName: string | null;
   image: string | null;
   subscriptionPlan: SubscriptionPlan;
+  /** Only present on admin listings. */
+  email?: string | null;
 }
 
 export interface Service {
@@ -109,6 +111,33 @@ export interface CustomerStats {
     accepted: number;
     rejected: number;
     cancelled: number;
+  };
+}
+
+export interface AdminStats {
+  users: { total: number; customers: number; vendors: number; blocked: number };
+  services: { total: number; pending: number; approved: number; rejected: number };
+  bookings: { total: number; pending: number };
+  subscriptions: { premiumVendors: number; transactions: number; successful: number };
+}
+
+export interface AdminUserDetail {
+  id: string;
+  name: string;
+  email: string;
+  image: string | null;
+  role: Role;
+  isBlocked: boolean;
+  businessName: string | null;
+  subscriptionPlan: SubscriptionPlan;
+  subscriptionExpiresAt: string | null;
+  createdAt?: string;
+  counts: {
+    services: number;
+    approvedServices: number;
+    pendingServices: number;
+    bookings: number;
+    pendingBookings: number;
   };
 }
 

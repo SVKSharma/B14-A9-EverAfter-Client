@@ -7,6 +7,9 @@ import type { Role } from "@/types";
 export const ROUTE_ACCESS: Record<string, { roles: Role[] }> = {
   "/dashboard": { roles: ["admin", "vendor", "customer"] },
   "/dashboard/admin": { roles: ["admin"] },
+  "/dashboard/admin/users": { roles: ["admin"] },
+  "/dashboard/admin/services": { roles: ["admin"] },
+  "/dashboard/admin/transactions": { roles: ["admin"] },
   "/dashboard/vendor": { roles: ["vendor"] },
   "/dashboard/vendor/services": { roles: ["vendor"] },
   "/dashboard/vendor/bookings": { roles: ["vendor"] },
