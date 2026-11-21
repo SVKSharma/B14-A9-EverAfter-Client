@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { ServiceForm } from "@/components/dashboard/service-form";
+import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch, getErrorMessage } from "@/lib/api";
 import type { Service } from "@/types";
 
@@ -34,9 +36,13 @@ export function EditServiceLoader() {
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-border/80 bg-card p-8 text-center">
+      <div className="mx-auto max-w-3xl rounded-2xl border border-border/70 bg-card/60 p-10 text-center">
         <p className="text-sm text-muted-foreground">{error}</p>
-        <Link href="/dashboard/vendor/services" className="mt-4 inline-block text-sm font-medium text-primary hover:underline">
+        <Link
+          href="/dashboard/vendor/services"
+          className="mt-4 inline-flex items-center gap-1.5 text-[0.7rem] tracking-[0.12em] text-primary uppercase hover:underline"
+        >
+          <ArrowLeft className="size-3.5" />
           Back to my services
         </Link>
       </div>
@@ -44,20 +50,55 @@ export function EditServiceLoader() {
   }
 
   if (!service) {
-    return <div className="h-96 animate-pulse rounded-2xl bg-secondary/40" />;
+    return (
+      <div className="mx-auto max-w-3xl space-y-8">
+        <div className="space-y-3 border-b border-border/70 pb-6">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-8 w-52" />
+          <Skeleton className="h-3.5 w-72" />
+        </div>
+        <div className="space-y-6">
+          <Skeleton className="h-11 w-full rounded-xl" />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Skeleton className="h-11 w-full rounded-xl" />
+            <Skeleton className="h-11 w-full rounded-xl" />
+          </div>
+          <Skeleton className="h-11 w-full rounded-xl" />
+          <Skeleton className="h-40 w-full rounded-xl" />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton key={index} className="aspect-square w-full rounded-xl" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
-      <div>
-        <h1 className="font-heading text-3xl font-semibold tracking-tight">Edit service</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+    <div className="mx-auto max-w-3xl">
+      <header className="border-b border-border/70 pb-6">
+        <Link
+          href="/dashboard/vendor/services"
+          className="inline-flex items-center gap-1.5 text-[0.65rem] tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-3.5" />
+          My services
+        </Link>
+        <p className="mt-5 eyebrow text-primary">Edit listing</p>
+        <h1 className="mt-3 truncate font-heading text-[1.9rem] leading-tight tracking-tight">
+          {service.serviceName}
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           {service.status === "approved"
             ? "Approved services return to review after you save changes."
             : "Changes are saved immediately and stay in their current review state."}
         </p>
+      </header>
+
+      <div className="mt-8">
+        <ServiceForm service={service} />
       </div>
-      <ServiceForm service={service} />
     </div>
   );
 }

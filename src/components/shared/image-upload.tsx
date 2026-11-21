@@ -69,7 +69,7 @@ export function ImageUpload({ value, onChange, max = MAX_SERVICE_IMAGES, label }
         {value.map((url, index) => (
           <div
             key={url}
-            className="group relative aspect-square overflow-hidden rounded-xl border border-border/80 bg-secondary/40"
+            className="group relative aspect-square overflow-hidden rounded-xl bg-muted ring-1 ring-border/60"
           >
             <Image
               src={url}
@@ -81,7 +81,7 @@ export function ImageUpload({ value, onChange, max = MAX_SERVICE_IMAGES, label }
             <button
               type="button"
               onClick={() => removeAt(index)}
-              className="absolute right-1.5 top-1.5 grid size-7 place-items-center rounded-full bg-background/90 text-foreground shadow-sm transition-opacity hover:bg-destructive hover:text-white"
+              className="absolute right-1.5 top-1.5 grid size-7 place-items-center rounded-full bg-background/90 text-foreground backdrop-blur-sm transition-colors hover:bg-destructive hover:text-white"
               aria-label={`Remove image ${index + 1}`}
             >
               <X className="size-3.5" />
@@ -92,7 +92,7 @@ export function ImageUpload({ value, onChange, max = MAX_SERVICE_IMAGES, label }
         {canAdd ? (
           <label
             className={cn(
-              "flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-border bg-secondary/20 text-center transition-colors hover:border-primary/50 hover:bg-secondary/50",
+              "flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-border bg-card/40 text-center transition-colors hover:border-primary/50 hover:bg-secondary/40",
               isUploading && "pointer-events-none opacity-60"
             )}
           >
@@ -111,15 +111,15 @@ export function ImageUpload({ value, onChange, max = MAX_SERVICE_IMAGES, label }
             ) : (
               <ImagePlus className="size-5 text-muted-foreground" />
             )}
-            <span className="px-2 text-[11px] leading-tight text-muted-foreground">
-              {isUploading ? "Uploading..." : "Add photo"}
+            <span className="px-2 text-[0.62rem] leading-tight tracking-[0.1em] text-muted-foreground uppercase">
+              {isUploading ? "Uploading…" : "Add photo"}
             </span>
           </label>
         ) : null}
       </div>
 
-      <p className="text-xs text-muted-foreground">
-        {value.length} of {max} photos · JPEG, PNG or WebP up to 5 MB each.
+      <p className="text-[0.7rem] text-muted-foreground">
+        {value.length} of {max} photos · JPEG, PNG or WebP, 5 MB each.
       </p>
     </div>
   );
