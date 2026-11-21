@@ -212,8 +212,8 @@ export function BrowseServices({ initialFilters }: { initialFilters: BrowseFilte
 
   return (
     <div>
-      <div className="sticky top-18 z-30 -mx-1 mb-8 px-1 pt-2">
-        <div className="glass-strong rounded-2xl p-4 sm:p-5">
+      <div className="mb-8">
+        <div className="glass-strong rounded-2xl p-3.5 sm:p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -222,7 +222,7 @@ export function BrowseServices({ initialFilters }: { initialFilters: BrowseFilte
                 onChange={(event) => handleSearchChange(event.target.value)}
                 placeholder="Search services by name"
                 aria-label="Search services by name"
-                className="h-12 rounded-full border-white/60 bg-white/70 pl-11"
+                className="h-11 rounded-full border-white/60 bg-white/70 pl-11"
               />
             </div>
 
@@ -234,7 +234,7 @@ export function BrowseServices({ initialFilters }: { initialFilters: BrowseFilte
                   onChange={(event) => handleLocationChange(event.target.value)}
                   placeholder="Any location"
                   aria-label="Filter by location"
-                  className="h-12 rounded-full border-white/60 bg-white/70 pl-11 sm:w-44"
+                  className="h-11 rounded-full border-white/60 bg-white/70 pl-11 sm:w-40"
                 />
               </div>
 
@@ -244,7 +244,7 @@ export function BrowseServices({ initialFilters }: { initialFilters: BrowseFilte
                   value={sort}
                   onChange={(event) => handleSelectChange("sort", event.target.value)}
                   aria-label="Sort services"
-                  className={cn(selectClassName, "h-12 pl-11 sm:w-44")}
+                  className={cn(selectClassName, "pl-11 sm:w-40")}
                 >
                   {SORT_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -257,7 +257,7 @@ export function BrowseServices({ initialFilters }: { initialFilters: BrowseFilte
             </div>
           </div>
 
-          <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <button
               type="button"
               onClick={() => handleSelectChange("category", "")}

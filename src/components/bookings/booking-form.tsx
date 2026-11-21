@@ -20,10 +20,6 @@ interface BookingFormProps {
   service: Service;
 }
 
-/**
- * Inline request form shown on the service details page for signed-in
- * customers. On success the customer is sent to their booking list.
- */
 export function BookingForm({ service }: BookingFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,9 +63,9 @@ export function BookingForm({ service }: BookingFormProps) {
 
   if (created) {
     return (
-      <div className="rounded-xl border border-emerald-600/20 bg-emerald-500/5 p-4 text-sm">
-        <p className="font-medium text-emerald-700 dark:text-emerald-400">Request sent</p>
-        <p className="mt-1 text-muted-foreground">
+      <div className="rounded-xl border border-sage/40 bg-sage/[0.08] p-4">
+        <p className="font-heading text-lg tracking-tight text-[#4f6b52]">Request sent</p>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
           {service.serviceName} will reply to your request for{" "}
           {new Date(created.eventDate).toLocaleDateString("en-US", {
             month: "long",
@@ -78,13 +74,13 @@ export function BookingForm({ service }: BookingFormProps) {
           })}
           .
         </p>
-        <div className="mt-3 flex flex-col gap-2">
+        <div className="mt-4 flex flex-col gap-2">
           <Link
             href="/dashboard/customer/bookings"
-            className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+            className="inline-flex items-center gap-1.5 text-[0.7rem] tracking-[0.12em] text-primary uppercase hover:underline"
           >
             View my bookings
-            <ArrowRight className="size-3.5" />
+            <ArrowRight className="size-3" />
           </Link>
           <button
             type="button"
@@ -92,7 +88,7 @@ export function BookingForm({ service }: BookingFormProps) {
               setCreated(null);
               form.reset({ eventDate: "", eventLocation: service.location, message: "" });
             }}
-            className="self-start text-xs text-muted-foreground underline-offset-4 hover:underline"
+            className="self-start text-[0.7rem] text-muted-foreground underline-offset-4 hover:underline"
           >
             Send another request
           </button>
@@ -103,16 +99,14 @@ export function BookingForm({ service }: BookingFormProps) {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
-      <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-        Request this service
-      </p>
+      <p className="eyebrow text-muted-foreground">Request this service</p>
 
       <div className="space-y-1.5">
         <Label htmlFor="eventDate">Event date</Label>
         <Input
           id="eventDate"
           type="date"
-          className="h-10"
+          className="h-11 rounded-xl"
           min={toDateInputValue(new Date())}
           aria-invalid={Boolean(form.formState.errors.eventDate)}
           {...form.register("eventDate")}
@@ -127,7 +121,7 @@ export function BookingForm({ service }: BookingFormProps) {
         <Input
           id="eventLocation"
           placeholder="Venue or city"
-          className="h-10"
+          className="h-11 rounded-xl"
           aria-invalid={Boolean(form.formState.errors.eventLocation)}
           {...form.register("eventLocation")}
         />
@@ -142,6 +136,7 @@ export function BookingForm({ service }: BookingFormProps) {
           id="message"
           rows={4}
           placeholder="Guest count, timings, and anything the vendor should know."
+          className="rounded-xl"
           aria-invalid={Boolean(form.formState.errors.message)}
           {...form.register("message")}
         />
@@ -152,7 +147,12 @@ export function BookingForm({ service }: BookingFormProps) {
         )}
       </div>
 
-      <Button type="submit" size="lg" className="h-12 w-full gap-2 text-base" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        size="lg"
+        className="h-12 w-full gap-2 rounded-full text-sm"
+        disabled={isSubmitting}
+      >
         {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : null}
         Send booking request
       </Button>
