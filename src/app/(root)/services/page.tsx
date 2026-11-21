@@ -55,25 +55,33 @@ export default async function BrowseServicesPage({
               </h1>
             </div>
 
-            <div className="glass grid w-full max-w-sm shrink-0 grid-cols-3 divide-x divide-foreground/10 rounded-2xl">
-              <div className="px-4 py-3">
-                <p className="font-heading text-xl leading-none text-foreground">Reviewed</p>
-                <p className="mt-1.5 text-[0.6rem] tracking-[0.14em] text-muted-foreground uppercase">
-                  Before listing
-                </p>
-              </div>
-              <div className="px-4 py-3">
-                <p className="font-heading text-xl leading-none text-foreground">Transparent</p>
-                <p className="mt-1.5 text-[0.6rem] tracking-[0.14em] text-muted-foreground uppercase">
-                  Starting prices
-                </p>
-              </div>
-              <div className="px-4 py-3">
-                <p className="font-heading text-xl leading-none text-foreground">Free</p>
-                <p className="mt-1.5 text-[0.6rem] tracking-[0.14em] text-muted-foreground uppercase">
-                  To enquire
-                </p>
-              </div>
+            <div className="glass w-full max-w-md shrink-0 overflow-hidden rounded-2xl">
+              <dl className="grid grid-cols-1 divide-y divide-foreground/10 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+                <div className="flex items-baseline justify-between gap-3 px-3.5 py-3 sm:block sm:px-4">
+                  <dt className="min-w-0 font-heading text-[0.95rem] leading-tight tracking-tight text-foreground">
+                    Reviewed
+                  </dt>
+                  <dd className="shrink-0 text-[0.58rem] tracking-[0.14em] text-muted-foreground uppercase sm:mt-1.5">
+                    Before listing
+                  </dd>
+                </div>
+                <div className="flex items-baseline justify-between gap-3 px-3.5 py-3 sm:block sm:px-4">
+                  <dt className="min-w-0 font-heading text-[0.95rem] leading-tight tracking-tight text-foreground">
+                    Transparent
+                  </dt>
+                  <dd className="shrink-0 text-[0.58rem] tracking-[0.14em] text-muted-foreground uppercase sm:mt-1.5">
+                    Starting prices
+                  </dd>
+                </div>
+                <div className="flex items-baseline justify-between gap-3 px-3.5 py-3 sm:block sm:px-4">
+                  <dt className="min-w-0 font-heading text-[0.95rem] leading-tight tracking-tight text-foreground">
+                    Free
+                  </dt>
+                  <dd className="shrink-0 text-[0.58rem] tracking-[0.14em] text-muted-foreground uppercase sm:mt-1.5">
+                    To enquire
+                  </dd>
+                </div>
+              </dl>
             </div>
           </div>
         </div>

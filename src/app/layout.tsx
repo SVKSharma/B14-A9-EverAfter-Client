@@ -49,7 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
         <TooltipProvider>
           {children}
-          <Toaster position="top-right" richColors closeButton />
+          <Toaster />
         </TooltipProvider>
       </body>
     </html>

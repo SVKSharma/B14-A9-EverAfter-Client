@@ -1,36 +1,34 @@
-"use client"
+"use client";
 
-import { Toaster as Sonner, type ToasterProps } from "sonner"
-import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
+import { Toaster as Sonner, type ToasterProps } from "sonner";
+import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon } from "lucide-react";
 
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       theme="light"
+      position="top-center"
       className="toaster group"
+      closeButton
+      gap={10}
+      visibleToasts={3}
       icons={{
-        success: (
-          <CircleCheckIcon className="size-4" />
-        ),
-        info: (
-          <InfoIcon className="size-4" />
-        ),
-        warning: (
-          <TriangleAlertIcon className="size-4" />
-        ),
-        error: (
-          <OctagonXIcon className="size-4" />
-        ),
-        loading: (
-          <Loader2Icon className="size-4 animate-spin" />
-        ),
+        success: <CircleCheckIcon className="size-3.5" strokeWidth={2} />,
+        info: <InfoIcon className="size-3.5" strokeWidth={2} />,
+        warning: <TriangleAlertIcon className="size-3.5" strokeWidth={2} />,
+        error: <OctagonXIcon className="size-3.5" strokeWidth={2} />,
+        loading: <Loader2Icon className="size-3.5 animate-spin" strokeWidth={2} />,
       }}
+      // Sits clear of the fixed public nav and the dashboard header, both 4.5rem.
+      offset={{ top: 88, left: 16, right: 16 }}
+      mobileOffset={{ top: 76, left: 12, right: 12 }}
       style={
         {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
+          "--width": "min(26rem, calc(100vw - 2rem))",
+          "--normal-bg": "var(--glass-strong)",
+          "--normal-text": "var(--foreground)",
+          "--normal-border": "var(--glass-border)",
+          "--border-radius": "1rem",
         } as React.CSSProperties
       }
       toastOptions={{
@@ -40,7 +38,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Toaster }
+export { Toaster };

@@ -282,4 +282,124 @@
       radial-gradient(50% 50% at 88% 14%, color-mix(in srgb, var(--gold) 30%, transparent), transparent 72%),
       radial-gradient(60% 60% at 70% 92%, color-mix(in srgb, var(--plum) 16%, transparent), transparent 75%);
   }
+
+  /*
+   * Toasts. Sonner ships a flat white card with a coloured icon; these rules
+   * replace it with the frosted panel used everywhere else. The extra
+   * `[data-sonner-toaster]` ancestor is there to outrank Sonner's own
+   * `[data-sonner-toast][data-styled='true']` selectors, which load at runtime.
+   */
+  [data-sonner-toaster] {
+    --toast-icon-margin-start: 0px;
+    --toast-icon-margin-end: 0.625rem;
+    --toast-svg-margin-start: 0px;
+    --toast-svg-margin-end: 0px;
+    --toast-close-button-start: unset;
+    --toast-close-button-end: -0.375rem;
+    --toast-close-button-transform: none;
+    font-family: var(--font-sans);
+  }
+
+  [data-sonner-toaster] [data-sonner-toast].cn-toast {
+    align-items: center;
+    gap: 0;
+    padding: 0.75rem 0.875rem 0.75rem 0.75rem;
+    border-radius: 1rem;
+    border: 1px solid var(--glass-border);
+    background-color: var(--glass-strong);
+    color: var(--foreground);
+    box-shadow:
+      0 1px 2px rgb(23 21 28 / 0.04),
+      0 22px 44px -26px rgb(23 21 28 / 0.42);
+    backdrop-filter: blur(26px) saturate(160%);
+    -webkit-backdrop-filter: blur(26px) saturate(160%);
+    font-size: 0.8125rem;
+  }
+
+  /* Status icon sits in a small tinted medallion instead of loose inline. */
+  [data-sonner-toaster] [data-sonner-toast].cn-toast [data-icon] {
+    display: grid;
+    place-items: center;
+    height: 1.625rem;
+    width: 1.625rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--sage) 42%, transparent);
+    background-color: color-mix(in srgb, var(--sage) 16%, transparent);
+    color: #4f6b52;
+  }
+
+  [data-sonner-toaster] [data-sonner-toast].cn-toast[data-type="error"] [data-icon] {
+    border-color: color-mix(in srgb, var(--destructive) 38%, transparent);
+    background-color: color-mix(in srgb, var(--destructive) 12%, transparent);
+    color: var(--destructive);
+  }
+
+  [data-sonner-toaster] [data-sonner-toast].cn-toast[data-type="warning"] [data-icon] {
+    border-color: color-mix(in srgb, var(--gold) 45%, transparent);
+    background-color: color-mix(in srgb, var(--gold) 16%, transparent);
+    color: #8a6c3a;
+  }
+
+  [data-sonner-toaster] [data-sonner-toast].cn-toast[data-type="info"] [data-icon],
+  [data-sonner-toaster] [data-sonner-toast].cn-toast[data-type="loading"] [data-icon] {
+    border-color: color-mix(in srgb, var(--plum) 30%, transparent);
+    background-color: color-mix(in srgb, var(--plum) 10%, transparent);
+    color: var(--plum);
+  }
+
+  [data-sonner-toaster] [data-sonner-toast].cn-toast [data-content] {
+    gap: 0.15rem;
+  }
+
+  [data-sonner-toaster] [data-sonner-toast].cn-toast [data-title] {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.45;
+    letter-spacing: -0.005em;
+    color: var(--foreground);
+  }
+
+  [data-sonner-toaster] [data-sonner-toast].cn-toast [data-description] {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--muted-foreground);
+  }
+
+  [data-sonner-toaster] [data-sonner-toast].cn-toast [data-button] {
+    height: 1.5rem;
+    border-radius: 999px;
+    padding-inline: 0.6rem;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 0.7rem;
+  }
+
+  [data-sonner-toaster] [data-sonner-toast].cn-toast [data-close-button] {
+    height: 1.125rem;
+    width: 1.125rem;
+    top: 0;
+    right: 0;
+    left: auto;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background-color: var(--surface);
+    color: var(--muted-foreground);
+    box-shadow: var(--shadow-soft);
+    opacity: 0;
+    transition:
+      opacity 160ms ease,
+      color 160ms ease,
+      background-color 160ms ease;
+  }
+
+  [data-sonner-toaster] [data-sonner-toast].cn-toast:hover [data-close-button],
+  [data-sonner-toaster] [data-sonner-toast].cn-toast:focus-within [data-close-button] {
+    opacity: 1;
+  }
+
+  [data-sonner-toaster] [data-sonner-toast].cn-toast [data-close-button]:hover {
+    border-color: color-mix(in srgb, var(--destructive) 35%, var(--border));
+    background-color: color-mix(in srgb, var(--destructive) 8%, var(--surface));
+    color: var(--destructive);
+  }
 }
