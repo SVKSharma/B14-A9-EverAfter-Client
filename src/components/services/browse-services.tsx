@@ -2,7 +2,16 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight, CloudOff, MapPin, Search, SearchX, SlidersHorizontal, X } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  CloudOff,
+  MapPin,
+  Search,
+  SearchX,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
 import { apiFetchPage, ApiError, buildQuery, getErrorMessage } from "@/lib/api";
 import { CATEGORIES, SORT_OPTIONS } from "@/lib/constants";
 import { ServiceCard } from "@/components/shared/service-card";
@@ -11,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import type { PaginationMeta, Service } from "@/types";
 
 const PAGE_SIZE = 6;
@@ -26,15 +36,15 @@ export interface BrowseFilters {
 
 function CardSkeleton() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border/80 bg-card">
-      <Skeleton className="aspect-4/3 w-full rounded-none" />
-      <div className="space-y-3 p-5">
+    <div className="overflow-hidden rounded-2xl border border-border/70 bg-card/70 p-2">
+      <Skeleton className="aspect-4/5 w-full rounded-xl" />
+      <div className="space-y-3 px-3 pb-3 pt-4">
         <Skeleton className="h-5 w-3/4" />
-        <Skeleton className="h-4 w-1/2" />
-        <Skeleton className="h-4 w-2/5" />
+        <Skeleton className="h-3.5 w-1/2" />
+        <Skeleton className="h-3.5 w-2/5" />
         <div className="flex items-center justify-between border-t border-border/70 pt-4">
-          <Skeleton className="h-8 w-20" />
-          <Skeleton className="h-9 w-24" />
+          <Skeleton className="h-7 w-20" />
+          <Skeleton className="size-9 rounded-full" />
         </div>
       </div>
     </div>
@@ -42,7 +52,7 @@ function CardSkeleton() {
 }
 
 const selectClassName =
-  "h-11 w-full rounded-lg border border-input bg-background px-3.5 text-sm text-foreground shadow-xs outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50";
+  "h-11 w-full appearance-none rounded-full border border-input bg-card/80 px-4 pr-9 text-sm text-foreground outline-none transition-colors focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/15 disabled:cursor-not-allowed disabled:opacity-55";
 
 export function BrowseServices({ initialFilters }: { initialFilters: BrowseFilters }) {
   const router = useRouter();
@@ -202,112 +212,126 @@ export function BrowseServices({ initialFilters }: { initialFilters: BrowseFilte
 
   return (
     <div>
-      <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <p className="inline-flex items-center gap-2 text-sm font-medium">
-            <SlidersHorizontal className="size-4 text-primary/70" />
-            Search &amp; filters
-          </p>
-          {activeFilters.length > 0 ? (
-            <Button variant="ghost" size="sm" className="h-8 px-2.5 text-muted-foreground" onClick={clearFilters}>
-              <X className="size-3.5" />
-              Clear all
-            </Button>
-          ) : null}
-        </div>
+      <div className="sticky top-18 z-30 -mx-1 mb-8 px-1 pt-2">
+        <div className="glass-strong rounded-2xl p-4 sm:p-5">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchInput}
+                onChange={(event) => handleSearchChange(event.target.value)}
+                placeholder="Search services by name"
+                aria-label="Search services by name"
+                className="h-12 rounded-full border-white/60 bg-white/70 pl-11"
+              />
+            </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_0.9fr]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={searchInput}
-              onChange={(event) => handleSearchChange(event.target.value)}
-              placeholder="Search services by name"
-              aria-label="Search services by name"
-              className="h-11 bg-background pl-10"
-            />
-          </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="relative">
+                <MapPin className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={locationInput}
+                  onChange={(event) => handleLocationChange(event.target.value)}
+                  placeholder="Any location"
+                  aria-label="Filter by location"
+                  className="h-12 rounded-full border-white/60 bg-white/70 pl-11 sm:w-44"
+                />
+              </div>
 
-          <select
-            value={category}
-            onChange={(event) => handleSelectChange("category", event.target.value)}
-            aria-label="Filter by category"
-            className={selectClassName}
-          >
-            <option value="">All categories</option>
-            {CATEGORIES.map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-
-          <div className="relative">
-            <MapPin className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={locationInput}
-              onChange={(event) => handleLocationChange(event.target.value)}
-              placeholder="Any location"
-              aria-label="Filter by location"
-              className="h-11 bg-background pl-10"
-            />
-          </div>
-
-          <select
-            value={sort}
-            onChange={(event) => handleSelectChange("sort", event.target.value)}
-            aria-label="Sort services"
-            className={selectClassName}
-          >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {activeFilters.length > 0 ? (
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-              Active
-            </span>
-            {activeFilters.map((filter) => (
-              <Badge key={filter.key} variant="secondary" className="gap-1.5 py-1 pl-2.5 pr-1.5">
-                {filter.label}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (filter.key === "search") setSearchInput("");
-                    if (filter.key === "location") setLocationInput("");
-                    setIsLoading(true);
-                    updateParams({ [filter.key]: null, page: null }, { keepScroll: true });
-                  }}
-                  aria-label={`Remove ${filter.key} filter`}
-                  className="rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+              <div className="relative">
+                <SlidersHorizontal className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <select
+                  value={sort}
+                  onChange={(event) => handleSelectChange("sort", event.target.value)}
+                  aria-label="Sort services"
+                  className={cn(selectClassName, "h-12 pl-11 sm:w-44")}
                 >
-                  <X className="size-3" />
-                </button>
-              </Badge>
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronRight className="pointer-events-none absolute right-4 top-1/2 size-3.5 -translate-y-1/2 rotate-90 text-muted-foreground" />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <button
+              type="button"
+              onClick={() => handleSelectChange("category", "")}
+              className={cn(
+                "shrink-0 rounded-full border px-3.5 py-1.5 text-[0.7rem] tracking-[0.1em] uppercase transition-colors",
+                category === ""
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border/80 bg-card/60 text-muted-foreground hover:text-foreground"
+              )}
+            >
+              All
+            </button>
+            {CATEGORIES.map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                onClick={() => handleSelectChange("category", item.value)}
+                className={cn(
+                  "shrink-0 rounded-full border px-3.5 py-1.5 text-[0.7rem] tracking-[0.1em] uppercase transition-colors",
+                  category === item.value
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border/80 bg-card/60 text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {item.label}
+              </button>
             ))}
           </div>
-        ) : null}
+        </div>
       </div>
 
-      <div className="mt-8 flex items-baseline justify-between gap-4">
-        <p className="text-sm text-muted-foreground">
-          {isLoading ? "Finding services…" : `${total} ${total === 1 ? "service" : "services"} found`}
-        </p>
-        {totalPages > 1 ? (
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/70 pb-4">
+        <div className="flex flex-wrap items-center gap-2">
           <p className="text-sm text-muted-foreground">
+            {isLoading ? "Finding services…" : `${total} ${total === 1 ? "service" : "services"}`}
+          </p>
+          {activeFilters.map((filter) => (
+            <Badge key={filter.key} variant="secondary" className="gap-1.5 py-1 pl-2.5 pr-1.5">
+              {filter.label}
+              <button
+                type="button"
+                onClick={() => {
+                  if (filter.key === "search") setSearchInput("");
+                  if (filter.key === "location") setLocationInput("");
+                  setIsLoading(true);
+                  updateParams({ [filter.key]: null, page: null }, { keepScroll: true });
+                }}
+                aria-label={`Remove ${filter.key} filter`}
+                className="rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+              >
+                <X className="size-3" />
+              </button>
+            </Badge>
+          ))}
+          {activeFilters.length > 0 ? (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="text-[0.7rem] tracking-[0.12em] text-primary uppercase underline-offset-4 hover:underline"
+            >
+              Clear all
+            </button>
+          ) : null}
+        </div>
+        {totalPages > 1 ? (
+          <p className="text-xs tracking-[0.1em] text-muted-foreground uppercase">
             Page {page} of {totalPages}
           </p>
         ) : null}
       </div>
 
-      <div className="mt-5">
+      <div className="mt-8">
         {isLoading ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, index) => (
               <CardSkeleton key={index} />
             ))}
@@ -318,7 +342,7 @@ export function BrowseServices({ initialFilters }: { initialFilters: BrowseFilte
             title="We couldn't load these services"
             description={error}
             action={
-              <Button size="lg" className="h-10 px-5" onClick={retry}>
+              <Button size="lg" className="h-11 rounded-full px-6" onClick={retry}>
                 Try again
               </Button>
             }
@@ -330,14 +354,19 @@ export function BrowseServices({ initialFilters }: { initialFilters: BrowseFilte
             description="Try a different name, category, or location — or clear your filters to see everything available."
             action={
               activeFilters.length > 0 ? (
-                <Button variant="outline" size="lg" className="h-10 px-5" onClick={clearFilters}>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="h-11 rounded-full px-6"
+                  onClick={clearFilters}
+                >
                   Clear filters
                 </Button>
               ) : undefined
             }
           />
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
               <ServiceCard key={service._id} service={service} />
             ))}
@@ -346,15 +375,15 @@ export function BrowseServices({ initialFilters }: { initialFilters: BrowseFilte
       </div>
 
       {!isLoading && !error && totalPages > 1 ? (
-        <nav className="mt-10 flex items-center justify-center gap-2" aria-label="Pagination">
+        <nav className="mt-12 flex items-center justify-center gap-1.5" aria-label="Pagination">
           <Button
             variant="outline"
-            className="h-10 gap-1.5 px-4"
+            className="h-10 gap-1.5 rounded-full px-4"
             disabled={page <= 1}
             onClick={() => goToPage(page - 1)}
           >
             <ChevronLeft className="size-4" />
-            Previous
+            <span className="hidden sm:inline">Previous</span>
           </Button>
           <div className="flex items-center gap-1">
             {Array.from({ length: totalPages }).map((_, index) => {
@@ -364,7 +393,7 @@ export function BrowseServices({ initialFilters }: { initialFilters: BrowseFilte
                   key={pageNumber}
                   variant={pageNumber === page ? "default" : "ghost"}
                   size="icon"
-                  className="size-10"
+                  className="size-9 rounded-full"
                   onClick={() => goToPage(pageNumber)}
                   aria-label={`Go to page ${pageNumber}`}
                   aria-current={pageNumber === page ? "page" : undefined}
@@ -376,11 +405,11 @@ export function BrowseServices({ initialFilters }: { initialFilters: BrowseFilte
           </div>
           <Button
             variant="outline"
-            className="h-10 gap-1.5 px-4"
+            className="h-10 gap-1.5 rounded-full px-4"
             disabled={page >= totalPages}
             onClick={() => goToPage(page + 1)}
           >
-            Next
+            <span className="hidden sm:inline">Next</span>
             <ChevronRight className="size-4" />
           </Button>
         </nav>
