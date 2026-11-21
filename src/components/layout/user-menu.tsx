@@ -49,47 +49,49 @@ export function UserMenu({ user, className }: { user: SessionUser; className?: s
           <button
             type="button"
             className={cn(
-              "flex items-center gap-2 rounded-full border border-border/80 bg-background py-1 pl-1 pr-3 text-left transition-colors hover:bg-secondary",
+              "flex items-center gap-2.5 rounded-full border border-border bg-card py-1 pl-1 pr-3 text-left transition-colors hover:border-foreground/25",
               className
             )}
             aria-label="Account menu"
           >
-            <Avatar size="sm" className="size-8">
+            <Avatar size="sm" className="size-7">
               {user.image ? <AvatarImage src={user.image} alt={user.name} /> : null}
-              <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+              <AvatarFallback className="bg-secondary text-[0.65rem] font-medium text-primary">
                 {initials(user.name) || "EA"}
               </AvatarFallback>
             </Avatar>
-            <span className="hidden max-w-32 truncate text-sm font-medium sm:block">
+            <span className="hidden max-w-32 truncate text-[0.8rem] font-medium sm:block">
               {user.name}
             </span>
-            <ChevronDown className="size-3.5 text-muted-foreground" />
+            <ChevronDown className="size-3 text-muted-foreground" strokeWidth={1.8} />
           </button>
         }
       />
 
-      <DropdownMenuContent align="end" className="w-60">
-        <DropdownMenuLabel className="px-2 py-1.5">
+      <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuLabel className="px-2.5 py-2">
           <span className="block truncate text-sm font-medium text-foreground">{user.name}</span>
-          <span className="block truncate text-xs font-normal">{user.email}</span>
-          <span className="mt-1 inline-flex rounded-full bg-secondary px-2 py-0.5 text-[11px] font-medium text-secondary-foreground">
+          <span className="mt-0.5 block truncate text-xs font-normal text-muted-foreground">
+            {user.email}
+          </span>
+          <span className="mt-2 inline-flex text-[0.6rem] tracking-[0.16em] text-primary uppercase">
             {ROLE_LABELS[user.role]}
           </span>
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator />
         <DropdownMenuItem render={<Link href={DASHBOARD_PATH_BY_ROLE[user.role]} />}>
-          <LayoutDashboard className="size-4" />
+          <LayoutDashboard className="size-4" strokeWidth={1.6} />
           Dashboard
         </DropdownMenuItem>
         <DropdownMenuItem render={<Link href="/dashboard/profile" />}>
-          <UserRound className="size-4" />
+          <UserRound className="size-4" strokeWidth={1.6} />
           Profile
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
-          <LogOut className="size-4" />
+          <LogOut className="size-4" strokeWidth={1.6} />
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

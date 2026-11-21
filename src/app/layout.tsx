@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Bodoni_Moda, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
@@ -10,10 +10,11 @@ const inter = Inter({
   display: "swap",
 });
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+const bodoni = Bodoni_Moda({
+  variable: "--font-bodoni",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -43,7 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${cormorant.variable} h-full antialiased`}
+      className={`${inter.variable} ${bodoni.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
         <TooltipProvider>

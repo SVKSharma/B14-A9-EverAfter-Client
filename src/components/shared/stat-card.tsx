@@ -1,5 +1,4 @@
 import type { LucideIcon } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface StatCardProps {
@@ -11,30 +10,37 @@ interface StatCardProps {
   tone?: "default" | "primary" | "warning" | "success";
 }
 
-const TONES = {
-  default: "bg-secondary text-foreground",
-  primary: "bg-primary/10 text-primary",
-  warning: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
-  success: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+const ACCENTS = {
+  default: "text-muted-foreground",
+  primary: "text-primary",
+  warning: "text-[#a5763a]",
+  success: "text-[#4f6b52]",
 } as const;
 
 export function StatCard({ icon: Icon, label, value, hint, className, tone = "default" }: StatCardProps) {
   return (
-    <Card className={cn("border-border/80", className)}>
-      <CardContent className="flex items-start gap-4 p-5">
-        <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl", TONES[tone])}>
-          <Icon className="size-5" strokeWidth={1.7} />
-        </span>
-        <div className="min-w-0">
-          <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-            {label}
-          </p>
-          <p className="mt-1 font-heading text-3xl font-semibold leading-none tracking-tight">
-            {value}
-          </p>
-          {hint ? <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p> : null}
-        </div>
-      </CardContent>
-    </Card>
+    <div className={cn("flex flex-col bg-card p-5", className)}>
+      <div className="flex items-center justify-between gap-3">
+        <p className="eyebrow text-muted-foreground">{label}</p>
+        <Icon className={cn("size-3.5 shrink-0", ACCENTS[tone])} strokeWidth={1.5} />
+      </div>
+      <p className="mt-4 font-heading text-[2.1rem] leading-none tracking-tight text-foreground">
+        {value}
+      </p>
+      {hint ? <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+export function StatStrip({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        "grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 xl:grid-cols-4",
+        className
+      )}
+    >
+      {children}
+    </div>
   );
 }
