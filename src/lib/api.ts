@@ -58,6 +58,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<A
     return fetch(getApiUrl(path), {
       ...rest,
       headers: finalHeaders,
+      credentials: "omit",
       body: body === undefined ? undefined : isFormData ? (body as FormData) : JSON.stringify(body),
     });
   };

@@ -1,21 +1,18 @@
 "use client";
 
-import type { Role } from "@/types";
-
-export interface SessionUser {
-  id: string;
-  name: string;
-  email: string;
-  image: string | null;
-  role: Role;
-  businessName?: string | null;
-}
+import { authClient } from "@/lib/auth-client";
+import { toSessionUser } from "@/lib/session-user";
+import type { SessionUser } from "@/types";
 
 /**
  * Single swap point for authentication state.
- * TODO(auth-phase): replace the placeholder body with Better Auth's useSession()
- * and map its user into SessionUser. Everything else consumes this hook.
+ * Better Auth's session is mapped into the app's SessionUser shape.
  */
 export function useSessionUser(): { user: SessionUser | null; isPending: boolean } {
-  return { user: null, isPending: false };
+  const { data, isPending } = authClient.useSession();
+
+  return {
+    user: data?.user ? toSessionUser(data.user as Parameters<typeof toSessionUser>[0]) : null,
+    isPending,
+  };
 }

@@ -17,12 +17,26 @@ export interface User {
   createdAt?: string;
 }
 
+/** Normalized shape the UI consumes from the Better Auth session. */
+export interface SessionUser {
+  id: string;
+  name: string;
+  email: string;
+  image: string | null;
+  role: Role;
+  isBlocked: boolean;
+  businessName?: string | null;
+  subscriptionPlan?: SubscriptionPlan;
+}
+
 export interface PublicVendor {
   id: string;
   name: string;
   businessName: string | null;
   image: string | null;
   subscriptionPlan: SubscriptionPlan;
+  /** Only present on admin listings. */
+  email?: string | null;
 }
 
 export interface Service {
@@ -71,11 +85,74 @@ export interface Transaction {
   vendor?: PublicVendor | null;
 }
 
+/** Shape returned by GET /api/users/me. */
+export interface ProfileUser {
+  id: string;
+  name: string;
+  email: string;
+  image: string | null;
+  role: Role;
+  businessName: string | null;
+  isBlocked: boolean;
+  subscriptionPlan: SubscriptionPlan;
+  subscriptionExpiresAt: string | null;
+  createdAt?: string | null;
+}
+
 export interface PaginationMeta {
   page: number;
   limit: number;
   total: number;
   totalPages: number;
+}
+
+export interface VendorStats {
+  services: { total: number; active: number; pending: number };
+  bookings: { pending: number; accepted: number; rejected: number };
+  plan: SubscriptionPlan;
+  quota: {
+    plan: SubscriptionPlan;
+    limit: number | null;
+    used: number;
+    remaining: number | null;
+  };
+}
+
+export interface CustomerStats {
+  bookings: {
+    total: number;
+    pending: number;
+    accepted: number;
+    rejected: number;
+    cancelled: number;
+  };
+}
+
+export interface AdminStats {
+  users: { total: number; customers: number; vendors: number; blocked: number };
+  services: { total: number; pending: number; approved: number; rejected: number };
+  bookings: { total: number; pending: number };
+  subscriptions: { premiumVendors: number; transactions: number; successful: number };
+}
+
+export interface AdminUserDetail {
+  id: string;
+  name: string;
+  email: string;
+  image: string | null;
+  role: Role;
+  isBlocked: boolean;
+  businessName: string | null;
+  subscriptionPlan: SubscriptionPlan;
+  subscriptionExpiresAt: string | null;
+  createdAt?: string;
+  counts: {
+    services: number;
+    approvedServices: number;
+    pendingServices: number;
+    bookings: number;
+    pendingBookings: number;
+  };
 }
 
 export interface ApiSuccess<T> {
