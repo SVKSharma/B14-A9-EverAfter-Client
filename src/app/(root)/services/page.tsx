@@ -47,17 +47,34 @@ export default async function BrowseServicesPage({
             </ol>
           </nav>
 
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="eyebrow text-primary">The collection</p>
               <h1 className="mt-3 font-heading text-[1.9rem] leading-[1.1] tracking-[-0.015em] sm:text-[2.4rem]">
                 Find your wedding <em className="italic text-primary">dream team.</em>
               </h1>
             </div>
-            <p className="max-w-md text-sm leading-relaxed text-muted-foreground lg:text-right">
-              Every studio here is reviewed before publishing. Filter by discipline, location or
-              price, and enquire with the ones that feel like you.
-            </p>
+
+            <div className="glass grid w-full max-w-sm shrink-0 grid-cols-3 divide-x divide-foreground/10 rounded-2xl">
+              <div className="px-4 py-3">
+                <p className="font-heading text-xl leading-none text-foreground">Reviewed</p>
+                <p className="mt-1.5 text-[0.6rem] tracking-[0.14em] text-muted-foreground uppercase">
+                  Before listing
+                </p>
+              </div>
+              <div className="px-4 py-3">
+                <p className="font-heading text-xl leading-none text-foreground">Transparent</p>
+                <p className="mt-1.5 text-[0.6rem] tracking-[0.14em] text-muted-foreground uppercase">
+                  Starting prices
+                </p>
+              </div>
+              <div className="px-4 py-3">
+                <p className="font-heading text-xl leading-none text-foreground">Free</p>
+                <p className="mt-1.5 text-[0.6rem] tracking-[0.14em] text-muted-foreground uppercase">
+                  To enquire
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
