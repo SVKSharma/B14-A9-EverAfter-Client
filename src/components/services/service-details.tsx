@@ -105,7 +105,7 @@ function DetailsSkeleton() {
   );
 }
 
-export function ServiceDetails({ id }: { id: string }) {
+export function ServiceDetails({ id, signInHref }: { id: string; signInHref: string }) {
   const { user } = useSessionUser();
   const [service, setService] = useState<Service | null>(null);
   const [related, setRelated] = useState<Service[]>([]);
@@ -120,7 +120,6 @@ export function ServiceDetails({ id }: { id: string }) {
     const load = async () => {
       try {
         const data = await apiFetch<Service>(`/services/${id}`, {
-          auth: false,
           signal: controller.signal,
         });
         if (!controller.signal.aborted) setService(data);
@@ -376,7 +375,7 @@ export function ServiceDetails({ id }: { id: string }) {
                 </div>
               ) : (
                 <Link
-                  href={`/sign-in?redirect=${encodeURIComponent(`/services/${service._id}`)}`}
+                  href={signInHref}
                   className={cn(buttonVariants({ size: "lg" }), "h-12 w-full gap-2 text-base shadow-sm")}
                 >
                   Sign in to book

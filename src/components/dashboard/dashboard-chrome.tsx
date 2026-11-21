@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Logo } from "@/components/layout/logo";
 import { UserMenu } from "@/components/layout/user-menu";
-import { authClient } from "@/lib/auth-client";
+import { authClient, resetTokenCache } from "@/lib/auth-client";
 import { DASHBOARD_PATH_BY_ROLE, ROLE_LABELS } from "@/lib/constants";
 import type { SessionUser } from "@/types";
 import { cn } from "@/lib/utils";
@@ -100,6 +100,7 @@ export function DashboardChrome({ user, children }: { user: SessionUser; childre
       toast.error(error.message ?? "Could not sign out. Try again.");
       return;
     }
+    resetTokenCache();
     toast.success("Signed out");
     router.push("/");
     router.refresh();

@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DASHBOARD_PATH_BY_ROLE, ROLE_LABELS } from "@/lib/constants";
-import { authClient } from "@/lib/auth-client";
+import { authClient, resetTokenCache } from "@/lib/auth-client";
 import type { SessionUser } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +36,7 @@ export function UserMenu({ user, className }: { user: SessionUser; className?: s
       toast.error(error.message ?? "Could not sign out. Try again.");
       return;
     }
+    resetTokenCache();
     toast.success("Signed out");
     router.push("/");
     router.refresh();

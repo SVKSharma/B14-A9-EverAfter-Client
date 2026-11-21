@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Logo } from "@/components/layout/logo";
 import { UserMenu } from "@/components/layout/user-menu";
 import { useSessionUser } from "@/hooks/use-session-user";
-import { authClient } from "@/lib/auth-client";
+import { authClient, resetTokenCache } from "@/lib/auth-client";
 import { DASHBOARD_PATH_BY_ROLE, ROLE_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -41,6 +41,7 @@ export function Navbar() {
       toast.error(error.message ?? "Could not sign out. Try again.");
       return;
     }
+    resetTokenCache();
     setOpen(false);
     toast.success("Signed out");
     router.push("/");

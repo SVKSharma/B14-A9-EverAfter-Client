@@ -1,45 +1,36 @@
 import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import { getApiUrl } from "@/lib/api";
 
-/**
- * Server-side call to the Express API, forwarding the incoming cookie so the
- * API can validate the Better Auth session. Used by dashboard pages that want
- * data on first paint instead of a client-side fetch.
- */
-export async function serverApiFetch<T>(path: string): Promise<T | null> {
+async function getJson(path: string) {
   const incoming = await headers();
+  const outgoing: Record<string, string> = { accept: "application/json" };
 
   try {
-    const response = await fetch(getApiUrl(path), {
-      headers: { cookie: incoming.get("cookie") ?? "", accept: "application/json" },
-      cache: "no-store",
-    });
+    const { token } = await auth.api.getToken({ headers: incoming });
+    if (token) outgoing.authorization = `Bearer ${token}`;
+  } catch {
+    return null;
+  }
 
+  try {
+    const response = await fetch(getApiUrl(path), { headers: outgoing, cache: "no-store" });
     if (!response.ok) return null;
-
-    const payload = await response.json();
-    return (payload?.data ?? null) as T | null;
+    return await response.json();
   } catch {
     return null;
   }
 }
 
+export async function serverApiFetch<T>(path: string): Promise<T | null> {
+  const payload = await getJson(path);
+  return (payload?.data ?? null) as T | null;
+}
+
 export async function serverApiFetchMeta<T>(
   path: string
 ): Promise<{ data: T; meta?: Record<string, unknown> } | null> {
-  const incoming = await headers();
-
-  try {
-    const response = await fetch(getApiUrl(path), {
-      headers: { cookie: incoming.get("cookie") ?? "", accept: "application/json" },
-      cache: "no-store",
-    });
-
-    if (!response.ok) return null;
-
-    const payload = await response.json();
-    return { data: payload?.data as T, meta: payload?.meta };
-  } catch {
-    return null;
-  }
+  const payload = await getJson(path);
+  if (!payload) return null;
+  return { data: payload.data as T, meta: payload.meta };
 }

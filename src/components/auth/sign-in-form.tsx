@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "@/components/auth/google-icon";
-import { authClient } from "@/lib/auth-client";
+import { authClient, resetTokenCache } from "@/lib/auth-client";
 import { DASHBOARD_PATH_BY_ROLE } from "@/lib/constants";
 import { safeRedirectPath } from "@/lib/redirect";
 import { normalizeRole } from "@/lib/roles";
@@ -46,6 +46,7 @@ function SignInFormInner() {
       return;
     }
 
+    resetTokenCache();
     const role = normalizeRole(data?.user?.role);
     toast.success("Welcome back");
     router.push(redirectTo ?? DASHBOARD_PATH_BY_ROLE[role]);

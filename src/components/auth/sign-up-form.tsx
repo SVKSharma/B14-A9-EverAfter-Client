@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "@/components/auth/google-icon";
 import { SignUpAvatar } from "@/components/auth/sign-up-avatar";
 import { apiFetch } from "@/lib/api";
-import { authClient } from "@/lib/auth-client";
+import { authClient, resetTokenCache } from "@/lib/auth-client";
 import { DASHBOARD_PATH_BY_ROLE } from "@/lib/constants";
 import { safeRedirectPath } from "@/lib/redirect";
 import { normalizeRole } from "@/lib/roles";
@@ -59,8 +59,8 @@ function SignUpFormInner() {
       return;
     }
 
-    // The avatar can only be uploaded with a session, so it goes right after
-    // sign-up. A failure here must not hide the fact that the account exists.
+    resetTokenCache();
+
     if (values.image) {
       try {
         const uploaded = await apiFetch<{ url: string }>("/uploads/image", {

@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
+import { jwt } from "better-auth/plugins";
 import { APIError, createAuthMiddleware, getOAuthState } from "better-auth/api";
 import { MongoClient, ObjectId } from "mongodb";
 
@@ -71,6 +72,12 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
 
   database: mongodbAdapter(db, { client: mongoClient, usePlural: true }),
+
+  plugins: [
+    jwt({
+      schema: { jwks: { modelName: "jwk" } },
+    }),
+  ],
 
   emailAndPassword: {
     enabled: true,

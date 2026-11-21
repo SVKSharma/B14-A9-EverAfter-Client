@@ -3,16 +3,13 @@ import { getSessionCookie } from "better-auth/cookies";
 
 const AUTH_PAGES = ["/sign-in", "/sign-up"];
 
-/**
- * Optimistic edge check only: looks for the Better Auth session cookie.
- * The real session + role verification happens in the dashboard layout
- * (Node runtime, reads MongoDB).
- */
+const SERVICE_DETAILS = /^\/services\/[^/]+\/?$/;
+
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const hasSessionCookie = Boolean(getSessionCookie(request));
 
-  if (pathname.startsWith("/dashboard") && !hasSessionCookie) {
+  if (!hasSessionCookie && (pathname.startsWith("/dashboard") || SERVICE_DETAILS.test(pathname))) {
     const signInUrl = new URL("/sign-in", request.url);
     signInUrl.searchParams.set("redirect", `${pathname}${search}`);
     return NextResponse.redirect(signInUrl);
@@ -30,5 +27,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/sign-in", "/sign-up"],
+  matcher: ["/dashboard/:path*", "/services/:path*", "/sign-in", "/sign-up"],
 };
