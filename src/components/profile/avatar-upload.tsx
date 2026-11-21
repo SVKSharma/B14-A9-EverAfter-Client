@@ -52,14 +52,14 @@ export function AvatarUpload({ value, onChange, onClear, name }: AvatarUploadPro
     <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-5">
       <div
         className={cn(
-          "relative size-20 shrink-0 overflow-hidden rounded-full bg-secondary ring-1 ring-border/70",
+          "relative size-20 shrink-0 overflow-hidden rounded-full bg-secondary ring-1 ring-white/60",
           isUploading && "opacity-60"
         )}
       >
         {value ? (
           <Image src={value} alt={name} fill sizes="80px" className="object-cover" />
         ) : (
-          <span className="grid h-full place-items-center font-heading text-2xl font-semibold text-primary">
+          <span className="grid h-full place-items-center font-heading text-2xl text-primary">
             {initial}
           </span>
         )}
@@ -74,7 +74,7 @@ export function AvatarUpload({ value, onChange, onClear, name }: AvatarUploadPro
         <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
           <label
             className={cn(
-              "inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium transition-colors hover:bg-secondary",
+              "inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-[0.7rem] font-medium tracking-[0.02em] transition-colors hover:border-foreground/30",
               isUploading && "pointer-events-none opacity-60"
             )}
           >
@@ -96,7 +96,7 @@ export function AvatarUpload({ value, onChange, onClear, name }: AvatarUploadPro
               type="button"
               variant="ghost"
               size="sm"
-              className="h-8 gap-1.5 text-destructive hover:text-destructive"
+              className="h-8 gap-1.5 rounded-full text-destructive hover:text-destructive"
               onClick={onClear}
               disabled={isUploading}
             >
@@ -105,8 +105,8 @@ export function AvatarUpload({ value, onChange, onClear, name }: AvatarUploadPro
             </Button>
           ) : null}
         </div>
-        <p className="text-xs text-muted-foreground">
-          JPEG, PNG or WebP up to 5 MB. Optional.
+        <p className="text-[0.68rem] text-muted-foreground">
+          Optional · JPEG, PNG or WebP, 5 MB max.
         </p>
       </div>
     </div>
