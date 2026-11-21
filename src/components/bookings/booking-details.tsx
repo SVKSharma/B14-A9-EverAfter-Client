@@ -6,17 +6,17 @@ import Link from "next/link";
 import { toast } from "sonner";
 import {
   ArrowLeft,
+  ArrowUpRight,
   CalendarDays,
+  Check,
   CloudOff,
   Loader2,
-  Mail,
   MapPin,
   MessageSquare,
+  X,
   XCircle,
 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertDialog,
@@ -78,9 +78,16 @@ export function BookingDetails({ id }: { id: string }) {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-4 w-40" />
-        <Skeleton className="h-64 w-full rounded-2xl" />
+      <div className="mx-auto w-full max-w-6xl">
+        <Skeleton className="h-3 w-32" />
+        <div className="mt-6 space-y-3">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-9 w-2/3" />
+        </div>
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+          <Skeleton className="h-72 w-full rounded-2xl" />
+          <Skeleton className="h-72 w-full rounded-2xl" />
+        </div>
       </div>
     );
   }
@@ -94,7 +101,7 @@ export function BookingDetails({ id }: { id: string }) {
         action={
           <Link
             href="/dashboard/customer/bookings"
-            className={cn(buttonVariants({ size: "lg" }), "h-10 gap-2 px-5")}
+            className={cn(buttonVariants({ size: "lg" }), "h-11 gap-2 rounded-full px-6")}
           >
             <ArrowLeft className="size-4" />
             Back to my bookings
@@ -106,111 +113,213 @@ export function BookingDetails({ id }: { id: string }) {
 
   const service = booking.service;
   const vendorName = booking.vendor?.businessName || booking.vendor?.name || "Vendor";
+  const isPending = booking.status === "pending";
+
+  const meta = [
+    { icon: CalendarDays, label: "Event date", value: formatDate(booking.eventDate) },
+    { icon: MapPin, label: "Event location", value: booking.eventLocation },
+    { icon: MessageSquare, label: "Requested on", value: formatDate(booking.createdAt) },
+    {
+      icon: CalendarDays,
+      label: "Last update",
+      value: formatDateTime(booking.updatedAt ?? booking.createdAt),
+    },
+  ];
+
+  const timeline = [
+    {
+      label: "Request sent",
+      detail: formatDate(booking.createdAt),
+      state: "done" as const,
+    },
+    {
+      label:
+        booking.status === "accepted"
+          ? "Accepted by vendor"
+          : booking.status === "rejected"
+            ? "Declined by vendor"
+            : booking.status === "cancelled"
+              ? "Withdrawn by you"
+              : "Awaiting vendor reply",
+      detail:
+        booking.status === "pending"
+          ? "Most vendors reply within two days."
+          : formatDateTime(booking.updatedAt ?? booking.createdAt),
+      state:
+        booking.status === "pending"
+          ? ("current" as const)
+          : booking.status === "rejected" || booking.status === "cancelled"
+            ? ("stopped" as const)
+            : ("done" as const),
+    },
+  ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link
-          href="/dashboard/customer/bookings"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary"
-        >
-          <ArrowLeft className="size-4" />
-          My bookings
-        </Link>
+    <div className="mx-auto w-full max-w-6xl">
+      <Link
+        href="/dashboard/customer/bookings"
+        className="inline-flex items-center gap-1.5 text-[0.65rem] tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="size-3.5" />
+        My bookings
+      </Link>
 
-        {booking.status === "pending" ? (
-          <Button
-            variant="outline"
-            className="h-9 gap-1.5 text-destructive hover:text-destructive"
-            onClick={() => setShowCancel(true)}
-          >
-            <XCircle className="size-4" />
-            Cancel request
-          </Button>
-        ) : null}
-      </div>
+      <header className="mt-5 flex flex-col gap-4 border-b border-border/70 pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <p className="eyebrow text-primary">Request</p>
+          <h1 className="mt-3 truncate font-heading text-[1.9rem] leading-tight tracking-tight sm:text-[2.4rem]">
+            {service?.serviceName ?? "Service removed"}
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {vendorName}
+            {service ? (
+              <>
+                <span className="mx-1.5 text-muted-foreground/50">·</span>
+                {formatCurrency(service.price)} starting
+              </>
+            ) : null}
+          </p>
+        </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-heading text-3xl font-semibold tracking-tight">
-          {service?.serviceName ?? "Service removed"}
-        </h1>
-        <StatusBadge status={booking.status} className="text-xs" />
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-        <Card className="border-border/80">
-          <CardHeader>
-            <CardTitle className="font-heading text-xl">Request details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Detail icon={CalendarDays} label="Event date" value={formatDate(booking.eventDate)} />
-              <Detail icon={MapPin} label="Event location" value={booking.eventLocation} />
-              <Detail icon={MessageSquare} label="Requested on" value={formatDate(booking.createdAt)} />
-              <Detail
-                icon={CalendarDays}
-                label="Last update"
-                value={formatDateTime(booking.updatedAt ?? booking.createdAt)}
-              />
-            </div>
-
-            <Separator />
-
-            <div>
-              <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                Your message
-              </p>
-              <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed">{booking.message}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-4">
-          <Card className="border-border/80">
-            <CardHeader>
-              <CardTitle className="font-heading text-xl">Vendor</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="font-medium">{vendorName}</p>
-              {booking.vendor?.name && booking.vendor.businessName ? (
-                <p className="text-sm text-muted-foreground">{booking.vendor.name}</p>
-              ) : null}
-              {booking.customer?.email ? (
-                <p className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Mail className="size-3.5" />
-                  {booking.customer.email}
-                </p>
-              ) : null}
-              {service ? (
-                <>
-                  <Separator />
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Starting price</span>
-                    <span className="font-medium">{formatCurrency(service.price)}</span>
-                  </div>
-                  <Link
-                    href={`/services/${service._id}`}
-                    className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-9 w-full")}
-                  >
-                    View service
-                  </Link>
-                </>
-              ) : null}
-            </CardContent>
-          </Card>
-
-          {service?.images?.[0] ? (
-            <div className="relative aspect-4/3 overflow-hidden rounded-2xl border border-border/80">
-              <Image
-                src={service.images[0]}
-                alt={service.serviceName ?? "Service"}
-                fill
-                sizes="(min-width: 1024px) 33vw, 100vw"
-                className="object-cover"
-              />
-            </div>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <StatusBadge status={booking.status} />
+          {isPending ? (
+            <Button
+              variant="outline"
+              className="h-10 gap-1.5 rounded-full px-5 text-destructive hover:text-destructive"
+              onClick={() => setShowCancel(true)}
+            >
+              <XCircle className="size-4" />
+              Cancel request
+            </Button>
           ) : null}
         </div>
+      </header>
+
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1.5fr_1fr] lg:gap-8">
+        <div className="min-w-0 space-y-6">
+          <section className="rounded-2xl border border-border/70 bg-card/60 p-6 backdrop-blur-xl">
+            <h2 className="eyebrow text-muted-foreground">Progress</h2>
+            <ol className="mt-5 space-y-0">
+              {timeline.map((step, index) => (
+                <li key={step.label} className="relative flex gap-4 pb-5 last:pb-0">
+                  {index < timeline.length - 1 ? (
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-[0.6875rem] top-6 h-full w-px bg-border"
+                    />
+                  ) : null}
+                  <span
+                    className={cn(
+                      "relative z-10 grid size-6 shrink-0 place-items-center rounded-full border",
+                      step.state === "done" && "border-sage/60 bg-sage/15 text-[#4f6b52]",
+                      step.state === "current" && "border-[#c9a675]/60 bg-[#c9a675]/15 text-[#8a6c3a]",
+                      step.state === "stopped" && "border-border bg-muted text-muted-foreground"
+                    )}
+                  >
+                    {step.state === "done" ? (
+                      <Check className="size-3" strokeWidth={2.5} />
+                    ) : step.state === "stopped" ? (
+                      <X className="size-3" strokeWidth={2.5} />
+                    ) : (
+                      <span className="size-1.5 rounded-full bg-current" />
+                    )}
+                  </span>
+                  <div className="min-w-0 pt-0.5">
+                    <p className="text-sm font-medium text-foreground">{step.label}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{step.detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section className="rounded-2xl border border-border/70 bg-card/60 p-6 backdrop-blur-xl">
+            <h2 className="eyebrow text-muted-foreground">The details</h2>
+            <dl className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
+              {meta.map((entry) => (
+                <div key={entry.label} className="flex items-start gap-3">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full border border-border bg-background text-primary">
+                    <entry.icon className="size-3.5" strokeWidth={1.6} />
+                  </span>
+                  <div className="min-w-0">
+                    <dt className="text-[0.6rem] tracking-[0.14em] text-muted-foreground uppercase">
+                      {entry.label}
+                    </dt>
+                    <dd className="mt-1 text-sm font-medium text-foreground">{entry.value}</dd>
+                  </div>
+                </div>
+              ))}
+            </dl>
+          </section>
+
+          <section className="rounded-2xl border border-border/70 bg-card/60 p-6 backdrop-blur-xl">
+            <h2 className="eyebrow text-muted-foreground">Your message</h2>
+            <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-foreground/85">
+              {booking.message}
+            </p>
+          </section>
+        </div>
+
+        <aside className="min-w-0 space-y-5 lg:sticky lg:top-24 lg:self-start">
+          <div className="glass-strong overflow-hidden rounded-2xl">
+            {service?.images?.[0] ? (
+              <div className="relative aspect-16/10 w-full bg-muted">
+                <Image
+                  src={service.images[0]}
+                  alt={service.serviceName ?? "Service"}
+                  fill
+                  sizes="(min-width: 1024px) 33vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+            ) : null}
+
+            <div className="p-6">
+              <p className="eyebrow text-muted-foreground">Starting price</p>
+              <p className="mt-2 font-heading text-[2.2rem] leading-none tracking-tight text-primary">
+                {service ? formatCurrency(service.price) : "—"}
+              </p>
+              <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
+                Agreed directly with {vendorName}. EverAfter never charges couples a booking fee.
+              </p>
+
+              {service ? (
+                <Link
+                  href={`/services/${service._id}`}
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "lg" }),
+                    "mt-5 h-11 w-full gap-1.5 rounded-full"
+                  )}
+                >
+                  View service
+                  <ArrowUpRight className="size-3.5" />
+                </Link>
+              ) : null}
+            </div>
+
+            <div className="flex items-start gap-3 border-t border-border/70 p-6">
+              <span className="grid size-10 shrink-0 place-items-center rounded-full border border-border bg-background font-heading text-sm text-primary">
+                {vendorName.charAt(0).toUpperCase()}
+              </span>
+              <div className="min-w-0">
+                <p className="text-[0.6rem] tracking-[0.16em] text-muted-foreground uppercase">
+                  Your vendor
+                </p>
+                <p className="mt-1 truncate font-medium text-foreground">{vendorName}</p>
+                {booking.vendor?.name && booking.vendor.businessName ? (
+                  <p className="truncate text-xs text-muted-foreground">{booking.vendor.name}</p>
+                ) : null}
+              </div>
+            </div>
+          </div>
+
+          {isPending ? (
+            <p className="px-2 text-xs leading-relaxed text-muted-foreground">
+              Still deciding? You can withdraw this request until the vendor replies.
+            </p>
+          ) : null}
+        </aside>
       </div>
 
       <AlertDialog open={showCancel} onOpenChange={setShowCancel}>
@@ -237,30 +346,6 @@ export function BookingDetails({ id }: { id: string }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
-  );
-}
-
-function Detail({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof CalendarDays;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-start gap-2.5">
-      <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-secondary text-primary">
-        <Icon className="size-4" />
-      </span>
-      <div>
-        <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-          {label}
-        </p>
-        <p className="mt-0.5 text-sm font-medium">{value}</p>
-      </div>
     </div>
   );
 }
