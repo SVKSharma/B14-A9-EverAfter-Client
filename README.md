@@ -49,7 +49,7 @@ The interface pairs an editorial, frosted-glass look with practical tooling: URL
 <h2 style="font-size: 1.5rem; font-weight: 800;"><font color="#B8784E">🌟 Key Features</font></h2>
 
 - **Editorial home page:** A full-bleed hero, category showcase, featured services, a "why EverAfter" panel, a three-step planning guide, couple stories, and a closing call to action — all built from local imagery.
-- **Live service discovery:** Debounced search across service names, descriptions, and vendors, with category chips, a location field, price sorting, and pagination. Every filter is written to the URL, so a filtered view can be shared or refreshed without losing state.
+- **Live service discovery:** Debounced search across service names and descriptions, with category chips, a location field, price sorting, and pagination. Every filter is written to the URL, so a filtered view can be shared or refreshed without losing state.
 - **Rich service pages:** A four-image gallery, category and location details, vendor card with Premium badge, price, availability, related services, and a sticky booking panel.
 - **Booking requests:** Customers choose an event date, location, and message. Requests start as **pending**; vendors can accept or reject them; customers can cancel while a request is still pending.
 - **Duplicate protection:** The API refuses a second active request for the same service on the same date, and only approved, currently available services can be booked.
