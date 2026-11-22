@@ -7,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { ServiceForm } from "@/components/dashboard/service-form";
 import { ServiceFormSkeleton } from "@/components/shared/page-skeletons";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import { apiFetch, getErrorMessage } from "@/lib/api";
 import type { Service } from "@/types";
 
@@ -14,6 +15,8 @@ export function EditServiceLoader() {
   const params = useParams<{ id: string }>();
   const [service, setService] = useState<Service | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useDocumentTitle(service?.serviceName ? `Edit ${service.serviceName}` : null);
 
   useEffect(() => {
     let active = true;

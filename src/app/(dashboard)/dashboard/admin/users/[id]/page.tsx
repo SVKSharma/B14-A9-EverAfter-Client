@@ -20,7 +20,16 @@ import { formatDate, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { AdminUserDetail } from "@/types";
 
-export const metadata: Metadata = { title: "User Details" };
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const user = await serverApiFetch<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}`);
+
+  return { title: user?.name ?? "User Details" };
+}
 
 export default async function AdminUserDetailPage({
   params,

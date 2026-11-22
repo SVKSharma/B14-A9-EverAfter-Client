@@ -27,6 +27,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { StatCard, StatStrip } from "@/components/shared/stat-card";
 import { Textarea } from "@/components/ui/textarea";
+import { useTitleCount } from "@/hooks/use-title-count";
 import { apiFetch, apiFetchPage, getErrorMessage } from "@/lib/api";
 import { CATEGORIES, getCategoryLabel } from "@/lib/constants";
 import { formatCurrency, formatDate } from "@/lib/format";
@@ -68,6 +69,8 @@ export function AdminServiceList({ initialServices, initialTotal }: AdminService
     }),
     [services]
   );
+
+  useTitleCount(counts.pending);
 
   const load = async (
     next: { search?: string; status?: Filter; category?: string } = {}

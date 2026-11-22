@@ -9,6 +9,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { apiFetch, getErrorMessage } from "@/lib/api";
+import { useTitleCount } from "@/hooks/use-title-count";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Booking, BookingStatus } from "@/types";
@@ -55,6 +56,8 @@ export function VendorBookingList({ initialBookings }: { initialBookings: Bookin
       rejected: bookings.filter((item) => item.status === "rejected").length,
     };
   }, [bookings]);
+
+  useTitleCount(counts.pending);
 
   const visible = useMemo(() => {
     const list = filter === "all" ? bookings : bookings.filter((item) => item.status === filter);

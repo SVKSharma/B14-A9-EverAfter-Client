@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Heart, SearchX } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { SetTitle } from "@/components/shared/set-title";
 import { cn } from "@/lib/utils";
 
 const SUGGESTIONS = [
@@ -12,6 +13,7 @@ const SUGGESTIONS = [
 export default function NotFound() {
   return (
     <div className="relative flex min-h-dvh items-center justify-center overflow-hidden px-5 py-16 sm:px-7">
+      <SetTitle title="Page not found" />
       <div className="mesh pointer-events-none absolute inset-0 opacity-70" />
       <div className="pointer-events-none absolute -left-24 top-1/4 size-80 rounded-full bg-gold/18 blur-[120px]" />
       <div className="pointer-events-none absolute -right-20 bottom-1/4 size-72 rounded-full bg-sage/20 blur-[110px]" />

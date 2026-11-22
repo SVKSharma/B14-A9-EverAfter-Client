@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import { apiFetch, getErrorMessage } from "@/lib/api";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -41,6 +42,10 @@ export function BookingDetails({ id }: { id: string }) {
   const [error, setError] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
+
+  useDocumentTitle(
+    booking?.service?.serviceName ? `Booking · ${booking.service.serviceName}` : null
+  );
 
   useEffect(() => {
     let active = true;

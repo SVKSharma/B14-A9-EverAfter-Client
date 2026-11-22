@@ -21,6 +21,7 @@ import { apiFetch, ApiError, getErrorMessage } from "@/lib/api";
 import { formatCurrency } from "@/lib/format";
 import { getCategoryLabel } from "@/lib/constants";
 import { useSessionUser } from "@/hooks/use-session-user";
+import { useDocumentTitle } from "@/hooks/use-document-title";
 import { BookingForm } from "@/components/bookings/booking-form";
 import { ServiceCard } from "@/components/shared/service-card";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -38,6 +39,8 @@ export function ServiceDetails({ id, signInHref }: { id: string; signInHref: str
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+
+  useDocumentTitle(service?.serviceName);
 
   useEffect(() => {
     const controller = new AbortController();

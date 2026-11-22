@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, SearchX } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { SetTitle } from "@/components/shared/set-title";
 import { cn } from "@/lib/utils";
 
 /**
@@ -10,6 +11,7 @@ import { cn } from "@/lib/utils";
 export default function DashboardNotFound() {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border/70 bg-card/60 px-6 py-16 text-center backdrop-blur-xl sm:px-10">
+      <SetTitle title="Not found" />
       <div className="mesh pointer-events-none absolute inset-0 opacity-40" />
 
       <div className="relative">
