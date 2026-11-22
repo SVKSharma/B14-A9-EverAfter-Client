@@ -17,7 +17,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { BookingDetailSkeleton } from "@/components/shared/page-skeletons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -77,19 +77,7 @@ export function BookingDetails({ id }: { id: string }) {
   };
 
   if (isLoading) {
-    return (
-      <div className="mx-auto w-full max-w-6xl">
-        <Skeleton className="h-3 w-32" />
-        <div className="mt-6 space-y-3">
-          <Skeleton className="h-3 w-24" />
-          <Skeleton className="h-9 w-2/3" />
-        </div>
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-          <Skeleton className="h-72 w-full rounded-2xl" />
-          <Skeleton className="h-72 w-full rounded-2xl" />
-        </div>
-      </div>
-    );
+    return <BookingDetailSkeleton />;
   }
 
   if (error || !booking) {

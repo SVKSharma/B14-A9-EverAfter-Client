@@ -25,30 +25,10 @@ import { BookingForm } from "@/components/bookings/booking-form";
 import { ServiceCard } from "@/components/shared/service-card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Gallery } from "@/components/services/gallery";
+import { ServiceDetailsSkeleton } from "@/components/shared/page-skeletons";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import type { Service } from "@/types";
-
-function DetailsSkeleton() {
-  return (
-    <div className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-7 lg:px-8 lg:py-16">
-      <Skeleton className="h-3 w-32" />
-      <div className="mt-8 grid gap-10 lg:grid-cols-[1.6fr_1fr]">
-        <div>
-          <Skeleton className="aspect-4/3 w-full rounded-2xl" />
-          <div className="mt-8 space-y-4">
-            <Skeleton className="h-3 w-24" />
-            <Skeleton className="h-11 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-24 w-full" />
-          </div>
-        </div>
-        <Skeleton className="h-96 w-full rounded-2xl" />
-      </div>
-    </div>
-  );
-}
 
 export function ServiceDetails({ id, signInHref }: { id: string; signInHref: string }) {
   const { user } = useSessionUser();
@@ -106,7 +86,7 @@ export function ServiceDetails({ id, signInHref }: { id: string; signInHref: str
     return () => controller.abort();
   }, [service]);
 
-  if (isLoading) return <DetailsSkeleton />;
+  if (isLoading) return <ServiceDetailsSkeleton />;
 
   if (notFound) {
     return (

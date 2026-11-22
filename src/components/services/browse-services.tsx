@@ -16,9 +16,9 @@ import { apiFetchPage, ApiError, buildQuery, getErrorMessage } from "@/lib/api";
 import { CATEGORIES, SORT_OPTIONS } from "@/lib/constants";
 import { ServiceCard } from "@/components/shared/service-card";
 import { EmptyState } from "@/components/shared/empty-state";
+import { ServiceCardSkeleton } from "@/components/shared/page-skeletons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { PaginationMeta, Service } from "@/types";
@@ -35,20 +35,7 @@ export interface BrowseFilters {
 }
 
 function CardSkeleton() {
-  return (
-    <div className="overflow-hidden rounded-2xl border border-border/70 bg-card/70 p-2">
-      <Skeleton className="aspect-4/5 w-full rounded-xl" />
-      <div className="space-y-3 px-3 pb-3 pt-4">
-        <Skeleton className="h-5 w-3/4" />
-        <Skeleton className="h-3.5 w-1/2" />
-        <Skeleton className="h-3.5 w-2/5" />
-        <div className="flex items-center justify-between border-t border-border/70 pt-4">
-          <Skeleton className="h-7 w-20" />
-          <Skeleton className="size-9 rounded-full" />
-        </div>
-      </div>
-    </div>
-  );
+  return <ServiceCardSkeleton />;
 }
 
 const selectClassName =

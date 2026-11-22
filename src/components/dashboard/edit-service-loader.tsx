@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { ServiceForm } from "@/components/dashboard/service-form";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ServiceFormSkeleton } from "@/components/shared/page-skeletons";
 import { apiFetch, getErrorMessage } from "@/lib/api";
 import type { Service } from "@/types";
 
@@ -50,29 +50,7 @@ export function EditServiceLoader() {
   }
 
   if (!service) {
-    return (
-      <div className="mx-auto max-w-3xl space-y-8">
-        <div className="space-y-3 border-b border-border/70 pb-6">
-          <Skeleton className="h-3 w-24" />
-          <Skeleton className="h-8 w-52" />
-          <Skeleton className="h-3.5 w-72" />
-        </div>
-        <div className="space-y-6">
-          <Skeleton className="h-11 w-full rounded-xl" />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Skeleton className="h-11 w-full rounded-xl" />
-            <Skeleton className="h-11 w-full rounded-xl" />
-          </div>
-          <Skeleton className="h-11 w-full rounded-xl" />
-          <Skeleton className="h-40 w-full rounded-xl" />
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="aspect-square w-full rounded-xl" />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <ServiceFormSkeleton />;
   }
 
   return (

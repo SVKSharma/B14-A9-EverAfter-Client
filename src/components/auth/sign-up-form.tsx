@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "@/components/auth/google-icon";
 import { SignUpAvatar } from "@/components/auth/sign-up-avatar";
+import { AuthFormSkeleton } from "@/components/shared/page-skeletons";
 import { apiFetch } from "@/lib/api";
 import { authClient, resetTokenCache } from "@/lib/auth-client";
 import { DASHBOARD_PATH_BY_ROLE } from "@/lib/constants";
@@ -270,7 +271,7 @@ function SignUpFormInner() {
 
 export function SignUpForm() {
   return (
-    <Suspense fallback={<div className="skeleton h-[36rem] rounded-2xl" />}>
+    <Suspense fallback={<AuthFormSkeleton withRoleCards />}>
       <SignUpFormInner />
     </Suspense>
   );

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "@/components/auth/google-icon";
+import { AuthFormSkeleton } from "@/components/shared/page-skeletons";
 import { authClient, resetTokenCache } from "@/lib/auth-client";
 import { DASHBOARD_PATH_BY_ROLE } from "@/lib/constants";
 import { safeRedirectPath } from "@/lib/redirect";
@@ -177,7 +178,7 @@ function SignInFormInner() {
 
 export function SignInForm() {
   return (
-    <Suspense fallback={<div className="skeleton h-96 rounded-2xl" />}>
+    <Suspense fallback={<AuthFormSkeleton />}>
       <SignInFormInner />
     </Suspense>
   );

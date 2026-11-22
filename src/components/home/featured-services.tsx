@@ -9,7 +9,7 @@ import { formatCurrency } from "@/lib/format";
 import { getCategoryLabel } from "@/lib/constants";
 import { ServiceCard } from "@/components/shared/service-card";
 import { EmptyState } from "@/components/shared/empty-state";
-import { SkeletonGrid } from "@/components/shared/skeletons";
+import { FeaturedServicesSkeleton } from "@/components/shared/page-skeletons";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Service } from "@/types";
@@ -52,7 +52,7 @@ export function FeaturedServices({ className }: { className?: string }) {
   };
 
   if (isLoading) {
-    return <SkeletonGrid count={3} className={className} />;
+    return <FeaturedServicesSkeleton className={className} />;
   }
 
   if (error) {
