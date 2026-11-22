@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "@/components/auth/google-icon";
+import { AuthFormSkeleton } from "@/components/shared/page-skeletons";
 import { authClient, resetTokenCache } from "@/lib/auth-client";
 import { DASHBOARD_PATH_BY_ROLE } from "@/lib/constants";
 import { safeRedirectPath } from "@/lib/redirect";
@@ -67,14 +68,12 @@ function SignInFormInner() {
 
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary/80">
-        Welcome back
-      </p>
-      <h1 className="mt-3 font-heading text-4xl font-semibold tracking-tight">
-        Sign in to EverAfter
+      <p className="eyebrow text-primary">Welcome back</p>
+      <h1 className="mt-3 font-heading text-[2.1rem] leading-[1.1] tracking-tight sm:text-[2.5rem]">
+        Sign in to <em className="italic text-primary">EverAfter</em>
       </h1>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        Manage your bookings, services, and subscription in one calm place.
+        Your bookings, enquiries and subscription — all in one calm place.
       </p>
 
       {isBlocked ? (
@@ -87,7 +86,27 @@ function SignInFormInner() {
         </Alert>
       ) : null}
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-8 space-y-5" noValidate>
+      <Button
+        type="button"
+        variant="outline"
+        size="lg"
+        className="mt-7 h-12 w-full gap-2.5 rounded-full"
+        onClick={handleGoogle}
+        disabled={isGoogleLoading || isSubmitting}
+      >
+        {isGoogleLoading ? <Loader2 className="size-4 animate-spin" /> : <GoogleIcon className="size-4" />}
+        Continue with Google
+      </Button>
+
+      <div className="my-6 flex items-center gap-3">
+        <span className="h-px flex-1 bg-border" />
+        <span className="text-[0.6rem] tracking-[0.18em] text-muted-foreground uppercase">
+          or with email
+        </span>
+        <span className="h-px flex-1 bg-border" />
+      </div>
+
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -95,7 +114,7 @@ function SignInFormInner() {
             type="email"
             autoComplete="email"
             placeholder="you@example.com"
-            className="h-11"
+            className="h-12 rounded-xl"
             aria-invalid={Boolean(form.formState.errors.email)}
             {...form.register("email")}
           />
@@ -107,7 +126,7 @@ function SignInFormInner() {
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <Label htmlFor="password">Password</Label>
-            <span className="text-xs text-muted-foreground">Min 6 chars</span>
+            <span className="text-[0.7rem] text-muted-foreground">Min 6 chars</span>
           </div>
           <div className="relative">
             <Input
@@ -115,14 +134,14 @@ function SignInFormInner() {
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               placeholder="Your password"
-              className="h-11 pr-11"
+              className="h-12 rounded-xl pr-12"
               aria-invalid={Boolean(form.formState.errors.password)}
               {...form.register("password")}
             />
             <button
               type="button"
               onClick={() => setShowPassword((value) => !value)}
-              className="absolute inset-y-0 right-0 grid w-11 place-items-center text-muted-foreground hover:text-foreground"
+              className="absolute inset-y-0 right-0 grid w-12 place-items-center text-muted-foreground transition-colors hover:text-foreground"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -133,35 +152,22 @@ function SignInFormInner() {
           ) : null}
         </div>
 
-        <Button type="submit" size="lg" className="h-11 w-full" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          size="lg"
+          className="h-12 w-full rounded-full"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : null}
-          {isSubmitting ? "Signing in..." : "Sign in"}
+          {isSubmitting ? "Signing in…" : "Sign in"}
         </Button>
       </form>
-
-      <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-        <span className="h-px flex-1 bg-border" />
-        or
-        <span className="h-px flex-1 bg-border" />
-      </div>
-
-      <Button
-        type="button"
-        variant="outline"
-        size="lg"
-        className="h-11 w-full gap-2"
-        onClick={handleGoogle}
-        disabled={isGoogleLoading || isSubmitting}
-      >
-        {isGoogleLoading ? <Loader2 className="size-4 animate-spin" /> : <GoogleIcon className="size-4" />}
-        Continue with Google
-      </Button>
 
       <p className="mt-8 text-center text-sm text-muted-foreground">
         New to EverAfter?{" "}
         <Link
           href={redirectTo ? `/sign-up?redirect=${encodeURIComponent(redirectTo)}` : "/sign-up"}
-          className="font-medium text-primary hover:underline"
+          className="font-medium text-primary underline-offset-4 hover:underline"
         >
           Create an account
         </Link>
@@ -172,7 +178,7 @@ function SignInFormInner() {
 
 export function SignInForm() {
   return (
-    <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-secondary/40" />}>
+    <Suspense fallback={<AuthFormSkeleton />}>
       <SignInFormInner />
     </Suspense>
   );

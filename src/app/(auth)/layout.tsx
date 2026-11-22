@@ -1,47 +1,72 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, Star } from "lucide-react";
 import { Logo } from "@/components/layout/logo";
-import { APP_TAGLINE } from "@/lib/constants";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="grid min-h-dvh lg:grid-cols-2">
-      <aside className="relative hidden overflow-hidden bg-plum lg:block">
+    <div className="relative grid min-h-dvh lg:grid-cols-[1.05fr_1fr]">
+      <aside className="relative hidden overflow-hidden lg:block">
         <Image
-          src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1400&q=80"
+          src="/images/auth.jpg"
           alt="A couple holding hands with wedding rings and a bouquet"
           fill
           priority
-          sizes="50vw"
+          sizes="52vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-plum/95 via-plum/35 to-plum/20" />
-        <div className="relative flex h-full flex-col justify-between p-10">
+        <div className="absolute inset-0 bg-linear-to-t from-charcoal/90 via-charcoal/40 to-charcoal/20" />
+        <div className="pointer-events-none absolute -left-24 top-1/3 size-96 rounded-full bg-gold/20 blur-[120px]" />
+
+        <div className="relative flex h-full flex-col justify-between p-10 xl:p-14">
           <Logo tone="light" />
+
           <div className="max-w-md">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold">
-              EverAfter
-            </p>
-            <p className="mt-4 font-heading text-4xl font-medium leading-tight text-white">
-              {APP_TAGLINE}
-            </p>
-            <p className="mt-4 text-sm leading-relaxed text-white/75">
-              Trusted vendors, transparent pricing, and one calm place to plan the day you&apos;ve
-              always imagined.
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-charcoal/45 px-3.5 py-1.5 backdrop-blur-md">
+              <span className="flex items-center gap-0.5 text-gold">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star key={index} className="size-2.5 fill-current" strokeWidth={0} />
+                ))}
+              </span>
+              <span className="text-[0.6rem] tracking-[0.16em] text-white uppercase">
+                4.9 from 2,400 couples
+              </span>
+            </span>
+
+            <blockquote className="mt-7 font-heading text-[2rem] leading-[1.25] tracking-tight text-white xl:text-[2.4rem]">
+              &ldquo;We found every vendor for our day in one place, and planned it all in a
+              single afternoon.&rdquo;
+            </blockquote>
+            <p className="mt-5 text-[0.65rem] tracking-[0.18em] text-white/55 uppercase">
+              Amara &amp; Jonah · Hudson Valley
             </p>
           </div>
+
+          <p className="text-xs text-white/40">
+            New York · London · Lisbon — curated wedding vendors since 2021.
+          </p>
         </div>
       </aside>
 
-      <div className="flex flex-col px-6 py-10 sm:px-10">
-        <div className="lg:hidden">
+      <div className="flex flex-col px-5 py-8 sm:px-8 lg:px-10">
+        <div className="flex items-center justify-between gap-4 lg:hidden">
           <Logo />
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-[0.65rem] tracking-[0.14em] text-muted-foreground uppercase"
+          >
+            <ArrowLeft className="size-3" />
+            Home
+          </Link>
         </div>
-        <div className="flex flex-1 items-center justify-center py-12">
-          <div className="w-full max-w-md">{children}</div>
+
+        <div className="flex flex-1 items-center justify-center py-10">
+          <div className="w-full max-w-sm">{children}</div>
         </div>
-        <p className="text-center text-xs text-muted-foreground">
-          © EverAfter. All rights reserved.
+
+        <p className="text-center text-[0.65rem] tracking-[0.12em] text-muted-foreground uppercase">
+          © {new Date().getFullYear()} EverAfter
         </p>
       </div>
     </div>

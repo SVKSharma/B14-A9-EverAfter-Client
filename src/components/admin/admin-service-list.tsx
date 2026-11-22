@@ -1,20 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { Check, Loader2, Search, Trash2, X } from "lucide-react";
+import { Check, Clock3, Loader2, Search, ShieldCheck, Store, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -35,9 +25,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { StatCard, StatStrip } from "@/components/shared/stat-card";
+import { Textarea } from "@/components/ui/textarea";
+import { useTitleCount } from "@/hooks/use-title-count";
 import { apiFetch, apiFetchPage, getErrorMessage } from "@/lib/api";
-import { CATEGORIES, getCategoryLabel, SERVICE_STATUSES } from "@/lib/constants";
+import { CATEGORIES, getCategoryLabel } from "@/lib/constants";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import type { Service } from "@/types";
 
 interface AdminServiceListProps {
@@ -45,19 +39,20 @@ interface AdminServiceListProps {
   initialTotal: number;
 }
 
-const STATUS_OPTIONS = [
-  { value: "all", label: "All statuses" },
-  ...SERVICE_STATUSES.map((status) => ({
-    value: status,
-    label: status.charAt(0).toUpperCase() + status.slice(1),
-  })),
+type Filter = "all" | "pending" | "approved" | "rejected";
+
+const FILTERS: { value: Filter; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "pending", label: "In review" },
+  { value: "approved", label: "Live" },
+  { value: "rejected", label: "Rejected" },
 ];
 
 export function AdminServiceList({ initialServices, initialTotal }: AdminServiceListProps) {
   const [services, setServices] = useState(initialServices);
   const [total, setTotal] = useState(initialTotal);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("all");
+  const [status, setStatus] = useState<Filter>("all");
   const [category, setCategory] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -66,7 +61,20 @@ export function AdminServiceList({ initialServices, initialTotal }: AdminService
   const [rejectionReason, setRejectionReason] = useState("");
   const [pendingDelete, setPendingDelete] = useState<Service | null>(null);
 
-  const load = async (next: { search?: string; status?: string; category?: string } = {}) => {
+  const counts = useMemo(
+    () => ({
+      pending: services.filter((item) => item.status === "pending").length,
+      approved: services.filter((item) => item.status === "approved").length,
+      rejected: services.filter((item) => item.status === "rejected").length,
+    }),
+    [services]
+  );
+
+  useTitleCount(counts.pending);
+
+  const load = async (
+    next: { search?: string; status?: Filter; category?: string } = {}
+  ) => {
     const nextSearch = next.search ?? search;
     const nextStatus = next.status ?? status;
     const nextCategory = next.category ?? category;
@@ -161,71 +169,132 @@ export function AdminServiceList({ initialServices, initialTotal }: AdminService
     }
   };
 
+  const isFiltered = search.trim().length > 0 || status !== "all" || category !== "all";
+
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div className="space-y-6">
+      <StatStrip className="xl:grid-cols-3">
+        <StatCard
+          icon={Clock3}
+          label="In review"
+          value={counts.pending}
+          hint={counts.pending > 0 ? "Waiting on a decision" : "Queue is clear"}
+          tone={counts.pending > 0 ? "warning" : "success"}
+        />
+        <StatCard
+          icon={ShieldCheck}
+          label="Live"
+          value={counts.approved}
+          hint="Visible in the catalogue"
+          tone="success"
+        />
+        <StatCard
+          icon={Store}
+          label="Loaded"
+          value={total}
+          hint={`${counts.rejected} rejected on this page`}
+          tone="primary"
+        />
+      </StatStrip>
+
+      <div className="flex flex-col gap-3">
         <form
-          className="relative flex-1"
+          className="relative"
           onSubmit={(event) => {
             event.preventDefault();
             void load();
           }}
         >
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
+          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search service name, description or location"
-            className="h-10 pl-9"
             aria-label="Search services"
+            className="h-11 w-full rounded-full border border-input bg-card/80 pl-11 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/80 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/15"
           />
         </form>
 
-        <Select
-          value={status}
-          onValueChange={(value) => {
-            const next = value ?? "all";
-            setStatus(next);
-            void load({ status: next });
-          }}
-        >
-          <SelectTrigger className="h-10 w-full sm:w-40" aria-label="Filter by status">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {STATUS_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {FILTERS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => {
+                setStatus(option.value);
+                void load({ status: option.value });
+              }}
+              className={cn(
+                "shrink-0 rounded-full border px-3.5 py-1.5 text-[0.7rem] tracking-[0.1em] uppercase transition-colors",
+                status === option.value
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border/80 bg-card/60 text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {option.label}
+              {option.value === "pending" && counts.pending > 0 ? (
+                <span className="ml-1.5 tabular-nums opacity-70">{counts.pending}</span>
+              ) : null}
+            </button>
+          ))}
+        </div>
 
-        <Select
-          value={category}
-          onValueChange={(value) => {
-            const next = value ?? "all";
-            setCategory(next);
-            void load({ category: next });
-          }}
-        >
-          <SelectTrigger className="h-10 w-full sm:w-48" aria-label="Filter by category">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All categories</SelectItem>
-            {CATEGORIES.map((item) => (
-              <SelectItem key={item.value} value={item.value}>
-                {item.shortLabel}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <button
+            type="button"
+            onClick={() => {
+              setCategory("all");
+              void load({ category: "all" });
+            }}
+            className={cn(
+              "shrink-0 rounded-full border px-3 py-1 text-[0.65rem] tracking-[0.1em] uppercase transition-colors",
+              category === "all"
+                ? "border-foreground/25 bg-foreground/[0.06] text-foreground"
+                : "border-transparent bg-transparent text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Every category
+          </button>
+          {CATEGORIES.map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => {
+                setCategory(item.value);
+                void load({ category: item.value });
+              }}
+              className={cn(
+                "shrink-0 rounded-full border px-3 py-1 text-[0.65rem] tracking-[0.1em] uppercase transition-colors",
+                category === item.value
+                  ? "border-foreground/25 bg-foreground/[0.06] text-foreground"
+                  : "border-transparent bg-transparent text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {item.shortLabel}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <p className="text-xs text-muted-foreground">
-        {isLoading ? "Loading listings…" : `${total} listing${total === 1 ? "" : "s"}`}
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/70 pb-4">
+        <p className="text-sm text-muted-foreground">
+          {isLoading ? "Loading listings…" : `${total} listing${total === 1 ? "" : "s"}`}
+        </p>
+        {isFiltered ? (
+          <button
+            type="button"
+            onClick={() => {
+              setSearch("");
+              setStatus("all");
+              setCategory("all");
+              void load({ search: "", status: "all", category: "all" });
+            }}
+            className="text-[0.7rem] tracking-[0.12em] text-primary uppercase underline-offset-4 hover:underline"
+          >
+            Clear filters
+          </button>
+        ) : null}
+      </div>
 
       {services.length === 0 && !isLoading ? (
         <EmptyState
@@ -234,90 +303,116 @@ export function AdminServiceList({ initialServices, initialTotal }: AdminService
           description="Try a different search term, status or category."
         />
       ) : (
-        <div className="space-y-2">
-          {services.map((service) => (
-            <Card key={service._id} className="border-border/80">
-              <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
-                <div className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-secondary/40">
-                  {service.images?.[0] ? (
-                    <Image
-                      src={service.images[0]}
-                      alt={service.serviceName}
-                      fill
-                      sizes="64px"
-                      className="object-cover"
-                    />
-                  ) : null}
-                </div>
+        <div className="space-y-3">
+          {services.map((service) => {
+            const isPending = service.status === "pending";
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="truncate font-medium">{service.serviceName}</p>
-                    <StatusBadge status={service.status} />
-                    {!service.availability ? (
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
-                        Unavailable
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="mt-1 truncate text-xs text-muted-foreground">
-                    {service.vendor?.businessName || service.vendor?.name || "Unknown vendor"}
-                    {service.vendor?.email ? ` · ${service.vendor.email}` : ""}
-                  </p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
-                    {getCategoryLabel(service.category)} · {formatCurrency(service.price)} ·{" "}
-                    {service.location} · Listed {formatDate(service.createdAt)}
-                  </p>
-                  {service.status === "rejected" && service.rejectionReason ? (
-                    <p className="mt-1.5 text-xs text-destructive">{service.rejectionReason}</p>
-                  ) : null}
-                </div>
-
-                <div className="flex shrink-0 flex-wrap items-center gap-1.5">
-                  {service.status !== "approved" ? (
-                    <Button
-                      size="sm"
-                      className="h-9 gap-1.5"
-                      onClick={() => void approve(service)}
-                      disabled={busyId === service._id}
-                    >
-                      {busyId === service._id ? (
-                        <Loader2 className="size-4 animate-spin" />
+            return (
+              <article
+                key={service._id}
+                className={cn(
+                  "overflow-hidden rounded-2xl border bg-card/60 backdrop-blur-xl transition-colors",
+                  isPending ? "border-primary/25" : "border-border/70"
+                )}
+              >
+                <div className="flex flex-col gap-4 p-4 sm:p-5">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                    <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-muted ring-1 ring-border/60">
+                      {service.images?.[0] ? (
+                        <Image
+                          src={service.images[0]}
+                          alt={service.serviceName}
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                        />
                       ) : (
-                        <Check className="size-4" />
+                        <span className="grid h-full place-items-center text-[0.55rem] tracking-[0.1em] text-muted-foreground uppercase">
+                          No photo
+                        </span>
                       )}
-                      Approve
-                    </Button>
-                  ) : null}
-                  {service.status !== "rejected" ? (
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h2 className="truncate font-heading text-lg leading-tight tracking-tight text-foreground">
+                          {service.serviceName}
+                        </h2>
+                        <StatusBadge status={service.status} />
+                        {!service.availability ? (
+                          <span className="inline-flex h-6 items-center rounded-full border border-border bg-muted/60 px-2.5 text-[0.62rem] tracking-[0.1em] text-muted-foreground uppercase">
+                            Unavailable
+                          </span>
+                        ) : null}
+                      </div>
+
+                      <p className="mt-2 truncate text-xs text-muted-foreground">
+                        {service.vendor?.businessName || service.vendor?.name || "Unknown vendor"}
+                        {service.vendor?.email ? ` · ${service.vendor.email}` : ""}
+                      </p>
+
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+                        <span>{getCategoryLabel(service.category)}</span>
+                        <span className="text-foreground">{formatCurrency(service.price)}</span>
+                        <span>{service.location}</span>
+                        <span>Listed {formatDate(service.createdAt)}</span>
+                      </div>
+
+                      {service.status === "rejected" && service.rejectionReason ? (
+                        <p className="mt-2.5 flex items-start gap-1.5 rounded-lg border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-xs leading-relaxed text-destructive">
+                          <X className="mt-0.5 size-3 shrink-0" strokeWidth={2.2} />
+                          {service.rejectionReason}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-1.5 border-t border-border/60 pt-3.5">
+                    {service.status !== "approved" ? (
+                      <Button
+                        size="sm"
+                        className="h-9 gap-1.5 rounded-full px-4"
+                        onClick={() => void approve(service)}
+                        disabled={busyId === service._id}
+                      >
+                        {busyId === service._id ? (
+                          <Loader2 className="size-3.5 animate-spin" />
+                        ) : (
+                          <Check className="size-3.5" />
+                        )}
+                        Approve
+                      </Button>
+                    ) : null}
+                    {service.status !== "rejected" ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9 gap-1.5 rounded-full px-4"
+                        onClick={() => {
+                          setRejecting(service);
+                          setRejectionReason("");
+                        }}
+                        disabled={busyId === service._id}
+                      >
+                        <X className="size-3.5" />
+                        Reject
+                      </Button>
+                    ) : null}
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
-                      className="h-9 gap-1.5"
-                      onClick={() => {
-                        setRejecting(service);
-                        setRejectionReason("");
-                      }}
+                      className="ml-auto h-9 gap-1.5 rounded-full px-4 text-destructive hover:text-destructive"
+                      onClick={() => setPendingDelete(service)}
                       disabled={busyId === service._id}
                     >
-                      <X className="size-4" />
-                      Reject
+                      <Trash2 className="size-3.5" />
+                      Delete
                     </Button>
-                  ) : null}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-9 text-destructive hover:text-destructive"
-                    aria-label={`Delete ${service.serviceName}`}
-                    onClick={() => setPendingDelete(service)}
-                    disabled={busyId === service._id}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              </article>
+            );
+          })}
         </div>
       )}
 
@@ -357,6 +452,7 @@ export function AdminServiceList({ initialServices, initialTotal }: AdminService
           <DialogFooter>
             <Button
               variant="outline"
+              className="rounded-full px-5"
               onClick={() => {
                 setRejecting(null);
                 setRejectionReason("");
@@ -365,7 +461,11 @@ export function AdminServiceList({ initialServices, initialTotal }: AdminService
             >
               Cancel
             </Button>
-            <Button onClick={() => void reject()} disabled={Boolean(busyId)}>
+            <Button
+              className="rounded-full px-5"
+              onClick={() => void reject()}
+              disabled={Boolean(busyId)}
+            >
               {busyId ? <Loader2 className="size-4 animate-spin" /> : null}
               Reject listing
             </Button>
@@ -388,6 +488,7 @@ export function AdminServiceList({ initialServices, initialTotal }: AdminService
           <AlertDialogFooter>
             <AlertDialogCancel disabled={Boolean(busyId)}>Keep it</AlertDialogCancel>
             <AlertDialogAction
+              variant="destructive"
               onClick={(event) => {
                 event.preventDefault();
                 void confirmDelete();

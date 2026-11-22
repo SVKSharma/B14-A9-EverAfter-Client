@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { ProfileForm } from "@/components/profile/profile-form";
+import { PageHeader } from "@/components/shared/page-header";
 import { getServerSession } from "@/lib/auth-guard";
 import { serverApiFetch } from "@/lib/server-api";
 import { toSessionUser } from "@/lib/session-user";
@@ -27,13 +28,13 @@ export default async function ProfilePage() {
   const user = (await serverApiFetch<ProfileUser>("/users/me")) ?? fallback;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-3xl font-semibold tracking-tight">Your profile</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          The details tied to your EverAfter account.
-        </p>
-      </div>
+    <div className="space-y-7">
+      <PageHeader
+        breadcrumb={[{ label: "Dashboard", href: `/dashboard/${user.role}` }, { label: "Profile" }]}
+        eyebrow="Settings"
+        title="Your profile"
+        description="The details tied to your EverAfter account."
+      />
 
       <ProfileForm user={user} />
     </div>

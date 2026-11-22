@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "@/components/auth/google-icon";
 import { SignUpAvatar } from "@/components/auth/sign-up-avatar";
+import { AuthFormSkeleton } from "@/components/shared/page-skeletons";
 import { apiFetch } from "@/lib/api";
 import { authClient, resetTokenCache } from "@/lib/auth-client";
 import { DASHBOARD_PATH_BY_ROLE } from "@/lib/constants";
@@ -21,9 +22,13 @@ import { signUpSchema, type SignUpValues } from "@/lib/schemas/auth";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/types";
 
-const ROLE_OPTIONS: { value: Extract<Role, "vendor" | "customer">; blurb: string }[] = [
-  { value: "customer", blurb: "I'm planning a wedding" },
-  { value: "vendor", blurb: "I offer wedding services" },
+const ROLE_OPTIONS: {
+  value: Extract<Role, "vendor" | "customer">;
+  label: string;
+  blurb: string;
+}[] = [
+  { value: "customer", label: "A couple", blurb: "I'm planning a wedding" },
+  { value: "vendor", label: "A vendor", blurb: "I offer wedding services" },
 ];
 
 function SignUpFormInner() {
@@ -36,8 +41,6 @@ function SignUpFormInner() {
 
   const form = useForm<SignUpValues>({
     resolver: zodResolver(signUpSchema),
-    // No role preselected: the person must state who they are before either
-    // the email form or Google can create an account.
     defaultValues: { name: "", email: "", password: "", role: undefined, image: "" },
     mode: "onTouched",
   });
@@ -85,8 +88,6 @@ function SignUpFormInner() {
       return;
     }
     setIsGoogleLoading(true);
-    // The chosen role rides the signed OAuth state and is applied only when
-    // Google creates a brand-new account. Existing accounts keep their role.
     const { error } = await authClient.signIn.social({
       provider: "google",
       callbackURL: redirectTo ?? "/dashboard",
@@ -100,24 +101,22 @@ function SignUpFormInner() {
 
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary/80">
-        Join EverAfter
-      </p>
-      <h1 className="mt-3 font-heading text-4xl font-semibold tracking-tight">
-        Create your account
+      <p className="eyebrow text-primary">Join EverAfter</p>
+      <h1 className="mt-3 font-heading text-[2.1rem] leading-[1.1] tracking-tight sm:text-[2.5rem]">
+        Create your <em className="italic text-primary">account</em>
       </h1>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        Whether you&apos;re planning the day or building a wedding business, this is the first step.
+        Planning the day, or building a wedding business? Choose where to start.
       </p>
 
-      <fieldset className="mt-8">
-        <legend className="text-sm font-medium">
+      <fieldset className="mt-7">
+        <legend className="text-[0.7rem] tracking-[0.14em] text-muted-foreground uppercase">
           I&apos;m signing up as
           <span className="ml-1 text-destructive" aria-hidden="true">
             *
           </span>
         </legend>
-        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+        <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
           {ROLE_OPTIONS.map((option) => {
             const selected = role === option.value;
             return (
@@ -128,16 +127,18 @@ function SignUpFormInner() {
                 aria-checked={selected}
                 onClick={() => form.setValue("role", option.value, { shouldValidate: true })}
                 className={cn(
-                  "rounded-xl border px-4 py-3 text-left transition-colors",
+                  "rounded-xl border px-4 py-3 text-left transition-all",
                   selected
-                    ? "border-primary bg-primary/5 ring-1 ring-primary/30"
-                    : "border-border/80 bg-background hover:bg-secondary/60"
+                    ? "border-primary bg-primary/[0.06] ring-1 ring-primary/30"
+                    : "border-border bg-card/60 hover:border-foreground/25"
                 )}
               >
-                <span className="block text-sm font-semibold">
-                  {option.value === "customer" ? "A couple" : "A vendor"}
+                <span className="block font-heading text-base leading-tight text-foreground">
+                  {option.label}
                 </span>
-                <span className="mt-0.5 block text-xs text-muted-foreground">{option.blurb}</span>
+                <span className="mt-0.5 block text-[0.7rem] text-muted-foreground">
+                  {option.blurb}
+                </span>
               </button>
             );
           })}
@@ -147,14 +148,14 @@ function SignUpFormInner() {
         ) : null}
       </fieldset>
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-5" noValidate>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>
         <div className="space-y-2">
           <Label htmlFor="name">Full name</Label>
           <Input
             id="name"
             autoComplete="name"
             placeholder="Alex Rivera"
-            className="h-11"
+            className="h-12 rounded-xl"
             aria-invalid={Boolean(form.formState.errors.name)}
             {...form.register("name")}
           />
@@ -170,7 +171,7 @@ function SignUpFormInner() {
             type="email"
             autoComplete="email"
             placeholder="you@example.com"
-            className="h-11"
+            className="h-12 rounded-xl"
             aria-invalid={Boolean(form.formState.errors.email)}
             {...form.register("email")}
           />
@@ -187,14 +188,14 @@ function SignUpFormInner() {
               type={showPassword ? "text" : "password"}
               autoComplete="new-password"
               placeholder="At least 6 characters"
-              className="h-11 pr-11"
+              className="h-12 rounded-xl pr-12"
               aria-invalid={Boolean(form.formState.errors.password)}
               {...form.register("password")}
             />
             <button
               type="button"
               onClick={() => setShowPassword((value) => !value)}
-              className="absolute inset-y-0 right-0 grid w-11 place-items-center text-muted-foreground hover:text-foreground"
+              className="absolute inset-y-0 right-0 grid w-12 place-items-center text-muted-foreground transition-colors hover:text-foreground"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -203,8 +204,8 @@ function SignUpFormInner() {
           {form.formState.errors.password ? (
             <p className="text-xs text-destructive">{form.formState.errors.password.message}</p>
           ) : (
-            <p className="text-xs text-muted-foreground">
-              At least 6 characters with one uppercase and one lowercase letter.
+            <p className="text-[0.7rem] text-muted-foreground">
+              At least 6 characters, one uppercase and one lowercase.
             </p>
           )}
         </div>
@@ -219,15 +220,20 @@ function SignUpFormInner() {
           />
         </div>
 
-        <Button type="submit" size="lg" className="h-11 w-full" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          size="lg"
+          className="h-12 w-full rounded-full"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : null}
-          {isSubmitting ? "Creating account..." : "Create account"}
+          {isSubmitting ? "Creating account…" : "Create account"}
         </Button>
       </form>
 
-      <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+      <div className="my-6 flex items-center gap-3">
         <span className="h-px flex-1 bg-border" />
-        or
+        <span className="text-[0.6rem] tracking-[0.18em] text-muted-foreground uppercase">or</span>
         <span className="h-px flex-1 bg-border" />
       </div>
 
@@ -235,7 +241,7 @@ function SignUpFormInner() {
         type="button"
         variant="outline"
         size="lg"
-        className="h-11 w-full gap-2"
+        className="h-12 w-full gap-2.5 rounded-full"
         onClick={handleGoogle}
         disabled={isGoogleLoading || isSubmitting || !role}
       >
@@ -245,16 +251,16 @@ function SignUpFormInner() {
           : "Continue with Google"}
       </Button>
       {!role ? (
-        <p className="mt-2 text-center text-xs text-muted-foreground">
+        <p className="mt-2 text-center text-[0.7rem] text-muted-foreground">
           Choose an account type above to continue with Google.
         </p>
       ) : null}
 
-      <p className="mt-8 text-center text-sm text-muted-foreground">
+      <p className="mt-7 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link
           href={redirectTo ? `/sign-in?redirect=${encodeURIComponent(redirectTo)}` : "/sign-in"}
-          className="font-medium text-primary hover:underline"
+          className="font-medium text-primary underline-offset-4 hover:underline"
         >
           Sign in
         </Link>
@@ -265,7 +271,7 @@ function SignUpFormInner() {
 
 export function SignUpForm() {
   return (
-    <Suspense fallback={<div className="h-[36rem] animate-pulse rounded-2xl bg-secondary/40" />}>
+    <Suspense fallback={<AuthFormSkeleton withRoleCards />}>
       <SignUpFormInner />
     </Suspense>
   );

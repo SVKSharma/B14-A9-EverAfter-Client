@@ -7,7 +7,7 @@ function NavbarFallback() {
   return (
     <div
       aria-hidden="true"
-      className="sticky top-0 z-50 h-18 border-b border-border/70 bg-background/85 backdrop-blur-md"
+      className="sticky top-0 z-50 h-20 border-b border-border bg-background"
     />
   );
 }

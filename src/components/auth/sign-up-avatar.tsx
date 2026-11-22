@@ -42,12 +42,12 @@ export function SignUpAvatar({ value, onChange, onClear, name }: SignUpAvatarPro
   const initial = name.trim().charAt(0).toUpperCase() || "?";
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="relative size-16 shrink-0 overflow-hidden rounded-full bg-secondary ring-1 ring-border/70">
+    <div className="flex items-center gap-3.5">
+      <div className="relative size-14 shrink-0 overflow-hidden rounded-full bg-secondary ring-1 ring-white/60">
         {value ? (
-          <Image src={value} alt="Your photo" fill sizes="64px" className="object-cover" unoptimized />
+          <Image src={value} alt="Your photo" fill sizes="56px" className="object-cover" unoptimized />
         ) : (
-          <span className="grid h-full place-items-center font-heading text-xl font-semibold text-primary">
+          <span className="grid h-full place-items-center font-heading text-lg text-primary">
             {isReading ? <Loader2 className="size-4 animate-spin" /> : initial}
           </span>
         )}
@@ -57,7 +57,7 @@ export function SignUpAvatar({ value, onChange, onClear, name }: SignUpAvatarPro
         <div className="flex items-center gap-2">
           <label
             className={cn(
-              "inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium transition-colors hover:bg-secondary",
+              "inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-[0.7rem] font-medium tracking-[0.02em] transition-colors hover:border-foreground/30",
               isReading && "pointer-events-none opacity-60"
             )}
           >
@@ -78,14 +78,14 @@ export function SignUpAvatar({ value, onChange, onClear, name }: SignUpAvatarPro
             <button
               type="button"
               onClick={onClear}
-              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive"
+              className="inline-flex items-center gap-1 text-[0.7rem] text-muted-foreground transition-colors hover:text-destructive"
             >
               <X className="size-3" />
               Remove
             </button>
           ) : null}
         </div>
-        <p className="text-xs text-muted-foreground">Optional · JPEG, PNG or WebP up to 5 MB.</p>
+        <p className="text-[0.68rem] text-muted-foreground">Optional · JPEG, PNG or WebP, 5 MB max.</p>
       </div>
     </div>
   );

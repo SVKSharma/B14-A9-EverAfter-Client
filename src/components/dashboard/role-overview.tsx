@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  ArrowRight,
+  ArrowUpRight,
   CalendarCheck,
   Heart,
   ShieldCheck,
@@ -8,9 +8,8 @@ import {
   Store,
   Wallet,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { OverviewHeader } from "@/components/dashboard/overview-header";
 import { ROLE_LABELS } from "@/lib/constants";
 import type { Role, SessionUser } from "@/types";
 import { cn } from "@/lib/utils";
@@ -19,7 +18,6 @@ interface RolePanel {
   icon: typeof Heart;
   title: string;
   description: string;
-  status: "ready" | "next";
   href?: string;
 }
 
@@ -29,21 +27,18 @@ const PANELS: Record<Role, RolePanel[]> = {
       icon: Heart,
       title: "Discover services",
       description: "Search approved venues, photographers, florists and more.",
-      status: "ready",
       href: "/services",
     },
     {
       icon: CalendarCheck,
       title: "My bookings",
       description: "Send requests, follow vendor replies and cancel pending ones.",
-      status: "ready",
       href: "/dashboard/customer/bookings",
     },
     {
       icon: Sparkles,
       title: "Your profile",
       description: "Keep your name and photo up to date.",
-      status: "ready",
       href: "/dashboard/profile",
     },
   ],
@@ -52,21 +47,19 @@ const PANELS: Record<Role, RolePanel[]> = {
       icon: Store,
       title: "My services",
       description: "Create listings, upload photos and manage availability.",
-      status: "ready",
       href: "/dashboard/vendor/services",
     },
     {
       icon: CalendarCheck,
       title: "Booking requests",
       description: "Accept or reject requests from couples.",
-      status: "ready",
       href: "/dashboard/vendor/bookings",
     },
     {
       icon: Wallet,
       title: "Premium plan",
       description: "Upgrade for unlimited services and a premium badge.",
-      status: "next",
+      href: "/dashboard/vendor/subscription",
     },
   ],
   admin: [
@@ -74,21 +67,18 @@ const PANELS: Record<Role, RolePanel[]> = {
       icon: ShieldCheck,
       title: "Manage users",
       description: "Search accounts, filter by role and block abusers.",
-      status: "ready",
       href: "/dashboard/admin/users",
     },
     {
       icon: Store,
       title: "Moderate services",
       description: "Approve, reject or remove vendor listings.",
-      status: "ready",
       href: "/dashboard/admin/services",
     },
     {
       icon: Wallet,
       title: "Transactions",
       description: "Read-only view of plan payments.",
-      status: "ready",
       href: "/dashboard/admin/transactions",
     },
   ],
@@ -106,100 +96,60 @@ export function RoleOverview({ user }: { user: SessionUser }) {
 
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-3xl bg-plum px-6 py-10 text-white shadow-lg sm:px-10">
-        <div className="pointer-events-none absolute -right-10 -top-16 size-56 rounded-full bg-gold/20 blur-2xl" />
-        <div className="relative">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold">
-            {ROLE_LABELS[user.role]} dashboard
-          </p>
-          <h1 className="mt-3 font-heading text-4xl font-semibold leading-tight sm:text-5xl">
-            Welcome back, {firstName}
-          </h1>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/80">
-            {ROLE_BLURB[user.role]}
-          </p>
-          <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+      <OverviewHeader
+        eyebrow={`${ROLE_LABELS[user.role]} dashboard`}
+        title={`Welcome back, ${firstName}`}
+        description={ROLE_BLURB[user.role]}
+        actions={
+          <>
             <Link
               href="/services"
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "h-11 gap-2 bg-background px-5 text-foreground hover:bg-background/90"
-              )}
+              className={cn(buttonVariants({ size: "lg" }), "h-11 gap-2 rounded-full px-5")}
             >
               Browse services
-              <ArrowRight className="size-4" />
             </Link>
             <Link
               href="/dashboard/profile"
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
-                "h-11 border-white/30 bg-transparent px-5 text-white hover:bg-white/10 hover:text-white"
+                "h-11 rounded-full px-5"
               )}
             >
               View profile
             </Link>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      />
 
       <section aria-labelledby="workspace-heading" className="space-y-4">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 id="workspace-heading" className="font-heading text-2xl font-semibold">
-              Your workspace
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Features unlock as each phase lands. Nothing here is decorative.
-            </p>
-          </div>
-        </div>
+        <h2 id="workspace-heading" className="eyebrow text-muted-foreground">
+          Your workspace
+        </h2>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {panels.map((panel) => {
-            const content = (
-              <Card
-                className={cn(
-                  "h-full border-border/80 transition-all",
-                  panel.status === "ready" && "hover:-translate-y-0.5 hover:shadow-md"
-                )}
-              >
-                <CardHeader className="gap-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="grid size-11 place-items-center rounded-xl bg-primary/10 text-primary">
-                      <panel.icon className="size-5" strokeWidth={1.7} />
-                    </span>
-                    <Badge variant={panel.status === "ready" ? "secondary" : "outline"}>
-                      {panel.status === "ready" ? "Ready" : "Next phase"}
-                    </Badge>
-                  </div>
-                  <div>
-                    <CardTitle className="font-heading text-xl">{panel.title}</CardTitle>
-                    <CardDescription className="mt-1.5">{panel.description}</CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {panel.href ? (
-                    <span className="inline-flex items-center gap-1 text-sm font-medium text-primary">
-                      Open
-                      <ArrowRight className="size-3.5" />
-                    </span>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">
-                      Coming in the next build step
-                    </span>
-                  )}
-                </CardContent>
-              </Card>
-            );
-
-            return panel.href ? (
-              <Link key={panel.title} href={panel.href} className="block">
-                {content}
-              </Link>
-            ) : (
-              <div key={panel.title}>{content}</div>
-            );
-          })}
+          {panels.map((panel) => (
+            <Link
+              key={panel.title}
+              href={panel.href ?? "/dashboard"}
+              className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border/70 bg-card/60 p-6 transition-colors hover:border-white hover:shadow-(--shadow-lift)"
+            >
+              <div>
+                <span className="grid size-10 place-items-center rounded-full border border-border bg-background text-primary">
+                  <panel.icon className="size-4" strokeWidth={1.7} />
+                </span>
+                <h3 className="mt-5 font-heading text-xl tracking-tight text-foreground">
+                  {panel.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {panel.description}
+                </p>
+              </div>
+              <span className="mt-6 inline-flex items-center gap-1.5 text-[0.65rem] tracking-[0.14em] text-primary uppercase">
+                Open
+                <ArrowUpRight className="size-3 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </span>
+            </Link>
+          ))}
         </div>
       </section>
     </div>
