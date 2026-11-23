@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { runWithAuthRetry } from "@/lib/auth";
 import { getApiUrl } from "@/lib/api";
 
 async function getJson(path: string) {
@@ -7,7 +7,7 @@ async function getJson(path: string) {
   const outgoing: Record<string, string> = { accept: "application/json" };
 
   try {
-    const { token } = await auth.api.getToken({ headers: incoming });
+    const { token } = await runWithAuthRetry((auth) => auth.api.getToken({ headers: incoming }));
     if (token) outgoing.authorization = `Bearer ${token}`;
   } catch {
     return null;

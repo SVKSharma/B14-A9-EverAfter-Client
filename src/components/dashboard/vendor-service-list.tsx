@@ -206,7 +206,7 @@ export function VendorServiceList({ initialServices, initialQuota }: VendorServi
                 </div>
 
                 <p className="mt-1.5 text-xs text-muted-foreground">
-                  {getCategoryLabel(service.category)} · {formatCurrency(service.price, "BDT")} ·{" "}
+                  {getCategoryLabel(service.category)} · {formatCurrency(service.price)} ·{" "}
                   {service.location}
                 </p>
 

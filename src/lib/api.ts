@@ -52,7 +52,12 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<A
 
     if (auth && tokenProvider) {
       const token = await tokenProvider({ forceRefresh });
-      if (token) finalHeaders.set("Authorization", `Bearer ${token}`);
+      // A signed-in page with no JWT means the session is gone; say so instead
+      // of sending an anonymous request that comes back as a bare 401.
+      if (!token) {
+        throw new ApiError("Your session has expired. Please sign in again.", 401);
+      }
+      finalHeaders.set("Authorization", `Bearer ${token}`);
     }
 
     return fetch(getApiUrl(path), {
@@ -69,7 +74,10 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<A
     if (response.status === 401 && auth && tokenProvider) {
       response = await send(true);
     }
-  } catch {
+  } catch (error) {
+    // Keep the specific "session expired" message; only transport failures get
+    // the generic connection copy.
+    if (error instanceof ApiError) throw error;
     throw new ApiError("Unable to reach the server. Please check your connection and try again.");
   }
 

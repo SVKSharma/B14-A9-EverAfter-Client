@@ -149,7 +149,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="price">Starting price (BDT)</Label>
+            <Label htmlFor="price">Starting price (USD)</Label>
             <Input
               id="price"
               type="number"
@@ -205,7 +205,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
       <Section
         index="03"
         title="Photographs"
-        description="Up to six images. The first one is used as the cover."
+        description="Up to four images. The first one is used as the cover."
       >
         <ImageUpload
           value={images}

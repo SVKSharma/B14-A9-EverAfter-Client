@@ -3,10 +3,10 @@
 import { createAuthClient } from "better-auth/react";
 import { inferAdditionalFields, jwtClient } from "better-auth/client/plugins";
 import { registerTokenProvider } from "@/lib/api";
-import type { auth } from "@/lib/auth";
+import type { Auth } from "@/lib/auth";
 
 export const authClient = createAuthClient({
-  plugins: [inferAdditionalFields<typeof auth>(), jwtClient()],
+  plugins: [inferAdditionalFields<Auth>(), jwtClient()],
 });
 
 export const { signIn, signUp, signOut, useSession } = authClient;

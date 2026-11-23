@@ -1,13 +1,14 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { runWithAuthRetry } from "@/lib/auth";
 import { DASHBOARD_PATH_BY_ROLE } from "@/lib/constants";
 import { resolveRouteAccess } from "@/lib/route-access";
 import { normalizeRole } from "@/lib/roles";
 import type { Role } from "@/types";
 
 export async function getServerSession() {
-  return auth.api.getSession({ headers: await headers() });
+  const headerList = await headers();
+  return runWithAuthRetry((auth) => auth.api.getSession({ headers: headerList }));
 }
 
 /**
